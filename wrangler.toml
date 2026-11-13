@@ -1,0 +1,9 @@
+name = "vienna-church"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-11-01"
+
+# After creating D1 in Cloudflare, add the binding through the Pages dashboard:
+# Settings > Bindings > Add > D1 database
+# Variable name: DB
+# Select the database created for this project.
+# Keep the database ID out of this example until a real database is created.
