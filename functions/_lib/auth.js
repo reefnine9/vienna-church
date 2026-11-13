@@ -9,7 +9,7 @@ const unb64=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.re
 async function key(secret){return crypto.subtle.importKey('raw',enc.encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign','verify'])}
 async function sign(payload,secret){return b64(await crypto.subtle.sign('HMAC',await key(secret),enc.encode(payload)))}
 async function validSignature(payload,sig,secret){try{return await crypto.subtle.verify('HMAC',await key(secret),unb64(sig),enc.encode(payload))}catch{return false}}
-export function configured(env){return !!(env.ADMIN_PASSWORD&&env.ADMIN_SESSION_SECRET&&env.DB&&env.ADMIN_PASSWORD.length>=12&&env.ADMIN_SESSION_SECRET.length>=32)}
+export function configured(env){return !!(env.ADMIN_PASSWORD&&env.ADMIN_SESSION_SECRET&&env.DB&&env.ADMIN_PASSWORD.length>=4&&env.ADMIN_SESSION_SECRET.length>=32)}
 function cookies(request){const raw=request.headers.get('cookie')||'';return raw.split(';').map(x=>x.trim()).find(x=>x.startsWith(cookieName+'='))?.slice(cookieName.length+1)}
 export async function authenticated(request,env){if(!configured(env))return false;const token=cookies(request);if(!token)return false;const parts=token.split('.');if(parts.length!==2)return false;const [payload,sig]=parts;if(!await validSignature(payload,sig,env.ADMIN_SESSION_SECRET))return false;try{const p=JSON.parse(new TextDecoder().decode(unb64(payload)));return p.v===1&&Number.isFinite(p.exp)&&p.exp>Date.now()/1000&&p.exp<=Date.now()/1000+YEAR&&p.role==='admin'}catch{return false}}
 export async function issue(env){const payload=b64(enc.encode(JSON.stringify({v:1,role:'admin',exp:Math.floor(Date.now()/1000)+YEAR})));return payload+'.'+await sign(payload,env.ADMIN_SESSION_SECRET)}
