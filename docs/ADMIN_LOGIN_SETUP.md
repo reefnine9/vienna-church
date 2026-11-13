@@ -9,7 +9,7 @@ Cloudflare > D1 > vienna-church-db > Console에서 [admin-auth-schema.sql](../ad
 Workers & Pages > vienna-church > Settings > Variables and secrets > Add.
 각각 **Secret** 유형으로 Production에 추가합니다.
 
-- `ADMIN_PASSWORD`: 직접 정한 길고 고유한 비밀번호 (12자 이상, 권장 16자 이상)
+- `ADMIN_PASSWORD`: 직접 정한 길고 고유한 비밀번호 (최소 4자 허용, 보안상 12자 이상 권장)
 - `ADMIN_SESSION_SECRET`: 비밀번호와 다른 무작위 문자열 (32자 이상, 권장 64자 이상)
 
 두 값은 **서로 달라야** 하며 채팅, GitHub, 스크린샷에 적지 마세요. 설정 후 새 배포가 필요할 수 있습니다.
