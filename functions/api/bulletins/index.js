@@ -14,6 +14,16 @@ export async function onRequestGet({env,params}) {
    env.DB.prepare('SELECT position,title,detail,kind,standing FROM worship_items WHERE bulletin_id=? ORDER BY position').bind(bulletin.id).all(),
    env.DB.prepare('SELECT title,body FROM announcements WHERE active=1 AND starts_on<=? AND ends_on>=? ORDER BY position').bind(bulletin.sunday_date,bulletin.sunday_date).all()
   ]);
-  const news=(announcements.results||[]).map(a=>{try{const v=JSON.parse(a.body);return v&&typeof v==='object'?{...a,body:v.news||'',extras:v.extras||{}}:a}catch{return a}});return json({bulletin:{...bulletin,items:items.results||[],announcements:news}});
+  const news=(announcements.results||[]).map(a=>{try{const v=JSON.parse(a.body);return v&&typeof v==='object'?{...a,body:v.news||'',extras:v.extras||{}}:a}catch{return a}});const start=new Date(bulletin.sunday_date+'T12:00:00Z');const dates=Array.from({length:3},(_,i)=>{const d=new Date(start);d.setUTCDate(d.getUTCDate()+7*i);return d.toISOString().slice(0,10)});
+  const schedule=await env.DB.prepare("SELECT sunday_date,slot,value FROM annual_schedule WHERE sunday_date>=? AND sunday_date<=?").bind(dates[0],dates[2]).all();
+  const map={};for(const e of schedule.results||[]){const v=map[e.sunday_date]||(map[e.sunday_date]={});if(e.slot==='custom'){try{Object.assign(v,JSON.parse(e.value))}catch{}}else v[e.slot]=e.value}
+  const original=news.find(a=>a.extras)?.extras||{};
+  const rows=(original.servants||'').split('\\n').filter(Boolean).map(line=>line.split('|').map(x=>x.trim()));
+  const labels=['인도','대표기도','봉헌'],slots=['service_leader','prayer_leader','offering_leader'];
+  const roster=[['구분',...dates.map(d=>String(Number(d.slice(5,7)))+'/'+String(Number(d.slice(8,10))))]];
+  labels.forEach((label,i)=>{const prior=rows.find(r=>r[0]===label)||[];roster.push([label,...dates.map((d,j)=>map[d]?.[slots[i]]??prior[j+1]??'')])});
+  const hasRoster=(schedule.results||[]).some(e=>['service_leader','prayer_leader','offering_leader','custom'].includes(e.slot))||!!original.servants;
+  if(hasRoster){const target=news.find(a=>a.extras);if(target)target.extras={...original,servants:roster.map(r=>r.join(' | ')).join('\\n')};else news.push({body:'',extras:{servants:roster.map(r=>r.join(' | ')).join('\\n')}})}
+  return json({bulletin:{...bulletin,items:items.results||[],announcements:news}});
  }catch{return json({error:'database_query_failed'},500)}
 }
