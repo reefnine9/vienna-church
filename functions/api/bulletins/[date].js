@@ -21,7 +21,7 @@ export async function onRequestGet({env,params}) {
   const rows=(original.servants||'').split('\n').filter(Boolean).map(line=>line.split('|').map(x=>x.trim()));
   const labels=['인도','대표기도','봉헌'],slots=['service_leader','prayer_leader','offering_leader'];
   const roster=[['구분',...dates.map(d=>String(Number(d.slice(5,7)))+'/'+String(Number(d.slice(8,10))))]];
-  labels.forEach((label,i)=>{const prior=rows.find(r=>r[0]===label)||[];roster.push([label,...dates.map((d,j)=>map[d]?.[slots[i]]??prior[j+1]??'')])});
+  labels.forEach((label,i)=>{const prior=rows.find(r=>r[0]===label)||[];roster.push([label,...dates.map((d,j)=>map[d]?.[slots[i]]??'')])});
   const hasRoster=(schedule.results||[]).some(e=>['service_leader','prayer_leader','offering_leader','custom'].includes(e.slot))||!!original.servants;
   if(hasRoster){const target=news.find(a=>a.extras);if(target)target.extras={...original,servants:roster.map(r=>r.join(' | ')).join('\n')};else news.push({body:'',extras:{servants:roster.map(r=>r.join(' | ')).join('\n')}})}
   return json({bulletin:{...bulletin,items:items.results||[],announcements:news}});
