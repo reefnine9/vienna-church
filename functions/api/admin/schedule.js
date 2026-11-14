@@ -7,20 +7,8 @@ export async function onRequestPut({request,env}){if(!sameOrigin(request))return
  const byDate=new Map();
  for(const x of entries){if(!x.value.trim())continue;if(!byDate.has(x.date))byDate.set(x.date,{});byDate.get(x.date)[x.slot]=x.value.trim();if(['service_leader','offering_leader'].includes(x.slot))continue;commands.push(env.DB.prepare('INSERT INTO annual_schedule(id,sunday_date,slot,value) VALUES(?,?,?,?)').bind(x.date+'-'+x.slot,x.date,x.slot,x.value.trim()))}for(const [date,v] of byDate){if(v.service_leader||v.offering_leader)commands.push(env.DB.prepare('INSERT INTO annual_schedule(id,sunday_date,slot,value) VALUES(?,?,?,?)').bind(date+'-custom',date,'custom',JSON.stringify({service_leader:v.service_leader||'',offering_leader:v.offering_leader||''})))}
  await env.DB.batch(commands);
- // Keep worship servant assignments in existing bulletins in sync with the annual plan.
- // Preserve all other bulletin content and publication status.
- for(const [date,values] of byDate){
-  const b=await env.DB.prepare('SELECT id FROM bulletins WHERE sunday_date=?').bind(date).first();
-  if(!b)continue;
-  const annId='weekly-'+date;
-  const ann=await env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind(annId).first();
-  let news='',extras={};
-  try{const parsed=JSON.parse(ann?.body||'');if(parsed&&typeof parsed==='object'){news=parsed.news||'';extras=parsed.extras||{}}else news=ann?.body||''}catch{news=ann?.body||''}
-  const rows=(extras.servants||'').split('\n').filter(Boolean).map(line=>line.split('|').map(v=>v.trim()));
-  const first=rows[0]||['구분'];const col=first.findIndex((v,i)=>i>0&&v===date.slice(5).replace('-','/'));
-  if(col>0){for(const [label,slot] of [['인도','service_leader'],['대표기도','prayer_leader'],['봉헌','offering_leader']]){let row=rows.find(r=>r[0]===label);if(!row){row=[label];rows.push(row)}row[col]=values[slot]||''}extras.servants=rows.map(r=>r.join(' | ')).join('\n');await env.DB.prepare("INSERT INTO announcements(id,title,body,starts_on,ends_on,position,active) VALUES(?,?,?,?,?,0,1) ON CONFLICT(id) DO UPDATE SET body=excluded.body").bind(annId,'이번 주 교회 소식',JSON.stringify({news,extras}),date,date).run()}
-  if(values.prayer_leader!==undefined)await env.DB.prepare("UPDATE worship_items SET detail=? WHERE bulletin_id=? AND title='대표 기도'").bind(values.prayer_leader,b.id).run();
- }
+ // Existing bulletins keep their content and publication status.
+ // The annual_schedule table is read directly by both bulletin views.
  const template=[['경배와 찬양','다같이'],['조용한 기도','다같이 (인도자)'],['경배 찬송',''],['죄의 고백 / 용서의 말씀','인도자'],['교독',''],['대표 기도',''],['찬송',''],['성경 봉독',''],['찬송',''],['말씀',''],['신앙 고백','사도신경'],['봉헌 찬송','']];
  const mappings={2:'opening_hymn',4:'responsive_reading',5:'prayer_leader',6:'hymn',8:'choir',11:'offertory_hymn'};
  let created=0;
