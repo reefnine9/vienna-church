@@ -17,6 +17,11 @@ export async function onRequestGet({env,params}) {
   const news=(announcements.results||[]).map(a=>{try{const v=JSON.parse(a.body);return v&&typeof v==='object'?{...a,body:v.news||'',extras:v.extras||{}}:a}catch{return a}});const start=new Date(bulletin.sunday_date+'T12:00:00Z');const dates=Array.from({length:3},(_,i)=>{const d=new Date(start);d.setUTCDate(d.getUTCDate()+7*i);return d.toISOString().slice(0,10)});
   const schedule=await env.DB.prepare("SELECT sunday_date,slot,value FROM annual_schedule WHERE sunday_date>=? AND sunday_date<=?").bind(dates[0],dates[2]).all();
   const map={};for(const e of schedule.results||[]){const v=map[e.sunday_date]||(map[e.sunday_date]={});if(e.slot==='custom'){try{Object.assign(v,JSON.parse(e.value))}catch{}}else v[e.slot]=e.value}
+  const current=map[bulletin.sunday_date]||{};
+  const visibleItems=(items.results||[]).map(r=>({...r}));
+  const slotNames={'경배 찬송':'opening_hymn','교독':'responsive_reading','교독문':'responsive_reading','대표 기도':'prayer_leader','봉헌 찬송':'offertory_hymn'};
+  let hymnCount=0;
+  visibleItems.forEach(r=>{let slot=slotNames[r.title];if(r.title==='찬송')slot=++hymnCount===1?'hymn':'choir';if(slot&&Object.hasOwn(current,slot))r.detail=current[slot]});
   const original=news.find(a=>a.extras)?.extras||{};
   const rows=(original.servants||'').split('\n').filter(Boolean).map(line=>line.split('|').map(x=>x.trim()));
   const labels=['인도','대표기도','봉헌'],slots=['service_leader','prayer_leader','offering_leader'];
@@ -24,6 +29,6 @@ export async function onRequestGet({env,params}) {
   labels.forEach((label,i)=>{const prior=rows.find(r=>r[0]===label)||[];roster.push([label,...dates.map((d,j)=>map[d]?.[slots[i]]??'')])});
   const hasRoster=(schedule.results||[]).some(e=>['service_leader','prayer_leader','offering_leader','custom'].includes(e.slot))||!!original.servants;
   if(hasRoster){const target=news.find(a=>a.extras);if(target)target.extras={...original,servants:roster.map(r=>r.join(' | ')).join('\n')};else news.push({body:'',extras:{servants:roster.map(r=>r.join(' | ')).join('\n')}})}
-  return json({bulletin:{...bulletin,items:items.results||[],announcements:news}});
+  return json({bulletin:{...bulletin,items:visibleItems,announcements:news}});
  }catch{return json({error:'database_query_failed'},500)}
 }
