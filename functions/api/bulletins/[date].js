@@ -14,6 +14,6 @@ export async function onRequestGet({env,params}) {
    env.DB.prepare('SELECT position,title,detail,kind,standing FROM worship_items WHERE bulletin_id=? ORDER BY position').bind(bulletin.id).all(),
    env.DB.prepare('SELECT title,body FROM announcements WHERE active=1 AND starts_on<=? AND ends_on>=? ORDER BY position').bind(bulletin.sunday_date,bulletin.sunday_date).all()
   ]);
-  return json({bulletin:{...bulletin,items:items.results||[],announcements:announcements.results||[]}});
+  const news=(announcements.results||[]).map(a=>{try{const v=JSON.parse(a.body);return v&&typeof v==='object'?{...a,body:v.news||'',extras:v.extras||{}}:a}catch{return a}});return json({bulletin:{...bulletin,items:items.results||[],announcements:news}});
  }catch{return json({error:'database_query_failed'},500)}
 }
