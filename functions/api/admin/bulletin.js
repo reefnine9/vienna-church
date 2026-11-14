@@ -12,7 +12,7 @@ async function annualRoster(env,date,stored=''){
  const old=stored.split('\n').filter(Boolean).map(line=>line.split('|').map(x=>x.trim()));
  const labels=['인도','대표기도','봉헌'],slots=['service_leader','prayer_leader','offering_leader'];
  const rows=[['구분',...dates.map(shortDate)]];
- labels.forEach((label,i)=>{const previous=old.find(r=>r[0]===label)||[];rows.push([label,...dates.map((d,j)=>map[d]?.[slots[i]]??previous[j+1]??'')])});
+ labels.forEach((label,i)=>{const previous=old.find(r=>r[0]===label)||[];rows.push([label,...dates.map((d,j)=>map[d]?.[slots[i]]??'')])});
  return {servants:rows.map(row=>row.join(' | ')).join('\n'),dates};
 }
 
