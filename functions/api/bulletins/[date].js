@@ -18,12 +18,12 @@ export async function onRequestGet({env,params}) {
   const schedule=await env.DB.prepare("SELECT sunday_date,slot,value FROM annual_schedule WHERE sunday_date>=? AND sunday_date<=?").bind(dates[0],dates[2]).all();
   const map={};for(const e of schedule.results||[]){const v=map[e.sunday_date]||(map[e.sunday_date]={});if(e.slot==='custom'){try{Object.assign(v,JSON.parse(e.value))}catch{}}else v[e.slot]=e.value}
   const original=news.find(a=>a.extras)?.extras||{};
-  const rows=(original.servants||'').split('\\n').filter(Boolean).map(line=>line.split('|').map(x=>x.trim()));
+  const rows=(original.servants||'').split('\n').filter(Boolean).map(line=>line.split('|').map(x=>x.trim()));
   const labels=['인도','대표기도','봉헌'],slots=['service_leader','prayer_leader','offering_leader'];
   const roster=[['구분',...dates.map(d=>String(Number(d.slice(5,7)))+'/'+String(Number(d.slice(8,10))))]];
   labels.forEach((label,i)=>{const prior=rows.find(r=>r[0]===label)||[];roster.push([label,...dates.map((d,j)=>map[d]?.[slots[i]]??prior[j+1]??'')])});
   const hasRoster=(schedule.results||[]).some(e=>['service_leader','prayer_leader','offering_leader','custom'].includes(e.slot))||!!original.servants;
-  if(hasRoster){const target=news.find(a=>a.extras);if(target)target.extras={...original,servants:roster.map(r=>r.join(' | ')).join('\\n')};else news.push({body:'',extras:{servants:roster.map(r=>r.join(' | ')).join('\\n')}})}
+  if(hasRoster){const target=news.find(a=>a.extras);if(target)target.extras={...original,servants:roster.map(r=>r.join(' | ')).join('\n')};else news.push({body:'',extras:{servants:roster.map(r=>r.join(' | ')).join('\n')}})}
   return json({bulletin:{...bulletin,items:items.results||[],announcements:news}});
  }catch{return json({error:'database_query_failed'},500)}
 }
