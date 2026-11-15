@@ -286,3 +286,9 @@ main[class*="bulletin-"] .expanded .praise-score-hint{font-size:.77em;line-heigh
 .score-pdf-slide{flex:0 0 100%;width:100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;display:flex;align-items:flex-start;justify-content:center;padding:8px;box-sizing:border-box}
 .score-pdf-slide .score-pdf-page{width:100%;max-width:100%;height:auto;align-self:flex-start}
 .praise-score-overlay>.score-pdf-viewer{overflow:hidden}
+
+/* Definitive single-page PDF viewer: no vertical PDF scrolling or page stacking. */
+.score-pdf-paged{overflow:hidden!important;display:flex;flex-direction:column}
+.score-pdf-single-page{flex:1;min-height:0;min-width:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:8px;background:#e9edf1;touch-action:pan-y;user-select:none;-webkit-user-select:none;outline-offset:-3px}
+.score-pdf-single-page .score-pdf-page{display:block;flex:none;max-width:100%;max-height:100%;object-fit:contain;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.15)}
+.score-pdf-single-page:focus:not(:focus-visible){outline:none}
