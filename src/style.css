@@ -131,3 +131,9 @@ main.bulletin-revision3{background:#fffcf8;color:#1b2b3c}
 .bulletin-revision3 .sermon{background:#f9eee9;border-left:3px solid #97182a}
 .bulletin-revision3 .notice{background:#faf1ed}
 @media(max-width:390px){.bulletin-revision3 header .tools button{width:29px;min-width:29px;flex-basis:29px}.bulletin-revision3 header .tools button:last-child{width:46px;flex-basis:46px;font-size:12px}}
+
+/* Restore the original compact church brand for Basic and Revision 1 only. */
+.bulletin-basic header .brand h1,.bulletin-revision1 header .brand h1{display:block;white-space:nowrap;font-size:clamp(15px,4vw,20px);letter-spacing:-.035em;line-height:1.25}
+.bulletin-basic header .brand,.bulletin-revision1 header .brand{gap:9px}
+.bulletin-basic header .brand>svg,.bulletin-revision1 header .brand>svg{color:#26394b;width:23px;height:23px}
+.bulletin-basic header .brand small,.bulletin-revision1 header .brand small{display:block;font-size:11px;letter-spacing:0;color:#8c94a0;margin-top:3px}
