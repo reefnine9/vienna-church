@@ -1,0 +1,4 @@
+import {reply,sameOrigin} from '../../_lib/auth.js';
+const ID='church-bulletin-design-v1';
+export async function onRequestGet({env}){try{const row=await env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind(ID).first();return reply({style:row?.body==='revision1'?'revision1':'basic'})}catch{return reply({error:'database_error'},500)}}
+export async function onRequestPut({env,request}){if(!sameOrigin(request))return reply({error:'invalid_origin'},403);let data;try{data=await request.json()}catch{return reply({error:'invalid_json'},400)}if(!['basic','revision1'].includes(data?.style))return reply({error:'invalid_style'},400);try{await env.DB.prepare("INSERT INTO announcements(id,title,body,starts_on,ends_on,position,active) VALUES(?,?,?,'2000-01-01','2099-12-31',0,0) ON CONFLICT(id) DO UPDATE SET body=excluded.body").bind(ID,'공개 주보 디자인',data.style).run();return reply({ok:true,style:data.style})}catch{return reply({error:'save_failed'},500)}}
