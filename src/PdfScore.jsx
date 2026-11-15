@@ -46,8 +46,8 @@ export default function PdfScore({url,title='악보',full=false}){
    const page=await pdf.getPage(current);if(cancelled)return;
    const base=page.getViewport({scale:1});
    const maxWidth=Math.max(100,root.clientWidth-16);
-   const maxHeight=Math.max(160,root.clientHeight-16);
-   const scale=Math.min(maxWidth/base.width,maxHeight/base.height);
+   // Fit to the available width, not the viewport height. Tall pages scroll vertically.
+   const scale=maxWidth/base.width;
    const viewport=page.getViewport({scale});
    const ratio=Math.min(window.devicePixelRatio||1,2);
    const canvas=document.createElement('canvas');
@@ -56,6 +56,7 @@ export default function PdfScore({url,title='악보',full=false}){
    canvas.style.width=viewport.width+'px';canvas.style.height=viewport.height+'px';
    canvas.setAttribute('aria-label',title+' '+current+'페이지');
    root.appendChild(canvas);
+   root.scrollTop=0;
    job=page.render({canvasContext:canvas.getContext('2d',{alpha:false}),viewport,transform:ratio===1?undefined:[ratio,0,0,ratio,0,0]});
    await job.promise;
   })().catch(e=>{if(!cancelled&&e?.name!=='RenderingCancelledException')setStatus('error')});
