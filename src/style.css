@@ -144,3 +144,32 @@ main.bulletin-revision3{background:#fffcf8;color:#1b2b3c}
 
 /* Congregation and all-together responsive-reading lines. */
 .responsive-reading-content p.responsive-reading-bold{font-weight:700}
+
+/* Compact public bulletin spacing, consistently across all four visual designs. */
+main[class*="bulletin-"] header{padding-top:13px;padding-bottom:12px}
+main[class*="bulletin-"] .datebar{padding-top:12px;padding-bottom:12px;margin-top:8px;margin-bottom:10px}
+main[class*="bulletin-"] .notice{padding:7px 9px;margin-bottom:10px}
+main[class*="bulletin-"] h2{margin-top:7px;margin-bottom:9px}
+main[class*="bulletin-"] .order,
+main[class*="bulletin-"] .community-section h2,
+main[class*="bulletin-"] .lunch-section h2,
+main[class*="bulletin-"] .news h2,
+main[class*="bulletin-"] .church-links h2{min-height:44px;padding-top:8px;padding-bottom:8px;margin:0}
+main[class*="bulletin-"] .expanded{padding:12px 13px}
+main[class*="bulletin-"] .sermon{padding:12px;margin:8px 0;gap:5px}
+main[class*="bulletin-"] .community-section>p,
+main[class*="bulletin-"] .news>p,
+main[class*="bulletin-"] .church-links>p{padding:8px 2px;line-height:1.5}
+main[class*="bulletin-"] .news .news-bullets{padding-top:8px;padding-bottom:8px;line-height:1.5}
+main[class*="bulletin-"] .news .news-bullets li{margin-bottom:.3em}
+main[class*="bulletin-"] .community-section p{line-height:1.5}
+main[class*="bulletin-"] .servants-table-wrap,
+main[class*="bulletin-"] .lunch-table-wrap{padding-top:7px;padding-bottom:9px}
+main[class*="bulletin-"] .servants-table td,
+main[class*="bulletin-"] .lunch-table-wrap td,
+main[class*="bulletin-"] .lunch-table-wrap th{padding-top:7px;padding-bottom:7px}
+/* One font step smaller than the expanded panel, with clearly bold congregation lines. */
+main[class*="bulletin-"] .expanded .responsive-reading-content{font-size:.9em;line-height:1.55;margin-top:8px;overflow-wrap:break-word}
+main[class*="bulletin-"] .expanded .responsive-reading-content p{font-size:inherit;line-height:inherit;margin:0 0 .3em;color:#283747;white-space:pre-wrap;font-weight:400}
+main[class*="bulletin-"] .expanded .responsive-reading-content p.responsive-reading-bold,
+main[class*="bulletin-"] .expanded .responsive-reading-content p.responsive-reading-bold strong{font-weight:800!important}
