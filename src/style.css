@@ -292,3 +292,10 @@ main[class*="bulletin-"] .expanded .praise-score-hint{font-size:.77em;line-heigh
 .score-pdf-single-page{flex:1;min-height:0;min-width:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:8px;background:#e9edf1;touch-action:pan-y;user-select:none;-webkit-user-select:none;outline-offset:-3px}
 .score-pdf-single-page .score-pdf-page{display:block;flex:none;max-width:100%;max-height:100%;object-fit:contain;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.15)}
 .score-pdf-single-page:focus:not(:focus-visible){outline:none}
+
+/* iPad home-screen mode: width-fit score, readable at natural page scale. */
+.score-pdf-paged .score-pdf-single-page{overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;align-items:flex-start;justify-content:center;touch-action:pan-y}
+.score-pdf-paged .score-pdf-single-page .score-pdf-page{max-height:none;max-width:100%;height:auto;object-fit:initial}
+@media(min-width:700px){
+ .praise-score-inline .score-pdf-viewer{height:min(84dvh,1050px);min-height:620px}
+}
