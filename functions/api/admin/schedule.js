@@ -1,6 +1,6 @@
 import {reply,sameOrigin} from '../../_lib/auth.js';
 const LUNCH_ID='church-lunch-schedule-v1';
-const slots=['opening_hymn','hymn','responsive_reading','offertory_hymn','prayer_leader','choir','service_leader','offering_leader'];
+const slots=['opening_hymn','hymn','responsive_reading','offertory_hymn','prayer_leader','choir','choir_pdf_url','service_leader','offering_leader'];
 const sunday=s=>/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(Date.parse(s+'T12:00:00Z'))&&new Date(s+'T12:00:00Z').toISOString().slice(0,10)===s&&new Date(s+'T12:00:00Z').getUTCDay()===0;
 async function migrateHistoricalBulletins(env,year){
   await env.DB.prepare('CREATE TABLE IF NOT EXISTS data_migrations (name TEXT PRIMARY KEY, applied_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run();
