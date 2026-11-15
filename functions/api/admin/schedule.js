@@ -21,9 +21,7 @@ async function migrateHistoricalBulletins(env,year){
    commands.push(env.DB.prepare('INSERT OR IGNORE INTO annual_schedule(id,sunday_date,slot,value) VALUES(?,?,?,?)').bind(r.sunday_date+'-'+slot,r.sunday_date,slot,r.detail.trim().slice(0,300)));
   }
   commands.push(env.DB.prepare('INSERT OR IGNORE INTO data_migrations(name) VALUES(?)').bind(migration));
-  const oldLunch=await env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind(LUNCH_ID).first();let allLunch=[];try{const parsed=JSON.parse(oldLunch?.body||'[]');if(Array.isArray(parsed))allLunch=parsed}catch{}const combined=[...allLunch.filter(e=>!e.date?.startsWith(year+'-')),...lunch.filter(e=>e.preparation.trim()||e.cleanup.trim()).map(e=>({date:e.date,preparation:e.preparation.trim(),cleanup:e.cleanup.trim()}))].sort((a,b)=>a.date.localeCompare(b.date));
- commands.push(env.DB.prepare("INSERT INTO announcements(id,title,body,starts_on,ends_on,position,active) VALUES(?,?,?,'2000-01-01','2099-12-31',0,0) ON CONFLICT(id) DO UPDATE SET body=excluded.body").bind(LUNCH_ID,'주일 점심 및 친교 일정',JSON.stringify(combined)));
- await env.DB.batch(commands);
+  await env.DB.batch(commands);
   return commands.length-1;
 }
 export async function onRequestGet({request,env}){const year=Number(new URL(request.url).searchParams.get('year'));if(!Number.isInteger(year)||year<2020||year>2100)return reply({error:'invalid_year'},400);try{await migrateHistoricalBulletins(env,year);const result=await env.DB.prepare('SELECT sunday_date,slot,value FROM annual_schedule WHERE sunday_date>=? AND sunday_date<? ORDER BY sunday_date,slot').bind(year+'-01-01',(year+1)+'-01-01').all();const entries=[];for(const e of result.results||[]){if(e.slot==='custom'){try{const x=JSON.parse(e.value);for(const slot of ['service_leader','offering_leader'])if(x[slot])entries.push({sunday_date:e.sunday_date,slot,value:x[slot]})}catch{}}else entries.push(e)}const lunchRow=await env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind(LUNCH_ID).first();let lunch=[];try{const parsed=JSON.parse(lunchRow?.body||'[]');if(Array.isArray(parsed))lunch=parsed.filter(e=>e.date?.startsWith(year+'-'))}catch{}return reply({year,entries,lunch})}catch{return reply({error:'database_error'},500)}}
@@ -31,6 +29,10 @@ export async function onRequestPut({request,env}){if(!sameOrigin(request))return
  const commands=[env.DB.prepare('DELETE FROM annual_schedule WHERE sunday_date>=? AND sunday_date<?').bind(year+'-01-01',(year+1)+'-01-01')];
  const byDate=new Map();
  for(const x of entries){if(!x.value.trim())continue;if(!byDate.has(x.date))byDate.set(x.date,{});byDate.get(x.date)[x.slot]=x.value.trim();if(['service_leader','offering_leader'].includes(x.slot))continue;commands.push(env.DB.prepare('INSERT INTO annual_schedule(id,sunday_date,slot,value) VALUES(?,?,?,?)').bind(x.date+'-'+x.slot,x.date,x.slot,x.value.trim()))}for(const [date,v] of byDate){if(v.service_leader||v.offering_leader)commands.push(env.DB.prepare('INSERT INTO annual_schedule(id,sunday_date,slot,value) VALUES(?,?,?,?)').bind(date+'-custom',date,'custom',JSON.stringify({service_leader:v.service_leader||'',offering_leader:v.offering_leader||''})))}
+ const oldLunch=await env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind(LUNCH_ID).first();
+ let allLunch=[];try{const parsed=JSON.parse(oldLunch?.body||'[]');if(Array.isArray(parsed))allLunch=parsed}catch{}
+ const combined=[...allLunch.filter(e=>!e.date?.startsWith(year+'-')),...lunch.filter(e=>e.preparation.trim()||e.cleanup.trim()).map(e=>({date:e.date,preparation:e.preparation.trim(),cleanup:e.cleanup.trim()}))].sort((a,b)=>a.date.localeCompare(b.date));
+ commands.push(env.DB.prepare("INSERT INTO announcements(id,title,body,starts_on,ends_on,position,active) VALUES(?,?,?,'2000-01-01','2099-12-31',0,0) ON CONFLICT(id) DO UPDATE SET body=excluded.body").bind(LUNCH_ID,'주일 점심 및 친교 일정',JSON.stringify(combined)));
  await env.DB.batch(commands);
  // Existing bulletins keep their content and publication status.
  // The annual_schedule table is read directly by both bulletin views.
