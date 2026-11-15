@@ -189,3 +189,14 @@ main[class*="bulletin-"] .expanded .responsive-reading-content p.responsive-read
 .responsive-reading-content>p.responsive-reading-normal{font-weight:400!important}
 /* Remove browser focus outline only for mouse clicks; preserve keyboard accessibility. */
 .order button.value:focus:not(:focus-visible){outline:none}
+
+/* Praise PDF viewer: shared across every bulletin design. */
+.praise-score-panel{padding-top:8px}
+.praise-score-open{display:inline-flex;align-items:center;gap:8px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#203b59;padding:10px 13px;font-weight:650}
+.praise-score-overlay{position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;background:#f3f4f6;color:#17283c}
+.praise-score-toolbar{flex:0 0 auto;min-height:56px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 14px;background:#fff;border-bottom:1px solid #dce1e8;font-size:15px}
+.praise-score-toolbar>div{display:flex;align-items:center;gap:10px}
+.praise-score-toolbar a{display:inline-flex;align-items:center;gap:4px;color:#264b71;text-decoration:none;font-size:13px}
+.praise-score-toolbar button{display:grid;place-items:center;border:0;border-radius:8px;background:#edf1f5;padding:8px;color:#24384e}
+.praise-score-overlay iframe{width:100%;flex:1;min-height:0;border:0;background:#fff}
+@media(max-width:380px){.praise-score-toolbar{padding:8px}.praise-score-toolbar a{font-size:12px}}
