@@ -9,7 +9,7 @@ export async function onRequestGet({request,env}){
   // Official 137-reading collection is loaded only after verified import.
   if(Number(n)<=137&&env.ASSETS){
    const asset=await env.ASSETS.fetch(new URL('/data/responsive-readings.json',request.url));
-   if(asset.ok){const data=await asset.json();const item=data?.readings?.[String(Number(n))];if(item?.lines?.length)return reply({number:Number(n),title:item.title||'',text:item.lines.join('\\n'),source:'official-ppt'});}
+   if(asset.ok){const data=await asset.json();const item=data?.readings?.[String(Number(n))];if(item?.lines?.length)return reply({number:Number(n),title:item.title||'',text:item.lines.join('\n'),verses:item.verses||[],source:'official-ppt'});}
   }
   return reply({number:Number(n),text:''});
  }catch{return reply({error:'database_error'},500)}
