@@ -173,3 +173,10 @@ main[class*="bulletin-"] .expanded .responsive-reading-content{font-size:.9em;li
 main[class*="bulletin-"] .expanded .responsive-reading-content p{font-size:inherit;line-height:inherit;margin:0 0 .3em;color:#283747;white-space:pre-wrap;font-weight:400}
 main[class*="bulletin-"] .expanded .responsive-reading-content p.responsive-reading-bold,
 main[class*="bulletin-"] .expanded .responsive-reading-content p.responsive-reading-bold strong{font-weight:800!important}
+
+/* Further tighten the responsive reading only; override inherited expanded p spacing. */
+main[class*="bulletin-"] .expanded .responsive-reading-content{font-size:.82em;line-height:1.38;margin-top:5px}
+main[class*="bulletin-"] .expanded .responsive-reading-content p{line-height:1.38;margin:0 0 .12em;padding:0;letter-spacing:-.015em}
+main[class*="bulletin-"] .expanded .responsive-reading-content p.responsive-reading-normal{font-weight:400!important}
+main[class*="bulletin-"] .expanded .responsive-reading-content p.responsive-reading-bold,
+main[class*="bulletin-"] .expanded .responsive-reading-content p.responsive-reading-bold strong{font-weight:800!important}
