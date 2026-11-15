@@ -13,3 +13,9 @@ header .brand{min-width:0;flex:1}header .brand>div{min-width:0}header .brand h1{
 
 /* Unified plain section headings throughout the public bulletin */
 .community-section h2,.lunch-section h2,.church-links h2{background:transparent;color:inherit;border-radius:0;padding:0;font-size:1.15em;font-weight:700;margin:10px 0 15px}
+
+/* Match section labels to the worship-order rows (e.g. 봉헌 찬송). */
+.community-section h2,.lunch-section h2,.news h2,.church-links h2{display:flex;align-items:center;box-sizing:border-box;min-height:55px;margin:0 0 14px;padding:11px 1px;background:transparent;color:#202b39;border:0;border-bottom:1px solid #edf0f2;border-radius:0;font:inherit;font-size:1em;font-weight:550;line-height:normal;text-align:left}
+.community-section,.lunch-section{margin-top:20px;margin-bottom:24px}
+.church-links h2{margin-top:18px;margin-bottom:12px}
+.news{padding-top:12px}
