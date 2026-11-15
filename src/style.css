@@ -19,3 +19,14 @@ header .brand{min-width:0;flex:1}header .brand>div{min-width:0}header .brand h1{
 .community-section,.lunch-section{margin-top:20px;margin-bottom:24px}
 .church-links h2{margin-top:18px;margin-bottom:12px}
 .news{padding-top:12px}
+
+/* Exact worship-row spacing: no extra vertical gap before/after section labels. */
+.community-sections{margin-top:0}
+.community-section,.lunch-section{margin:0;padding:0}
+.community-section h2,.lunch-section h2,.news h2,.church-links h2{min-height:55px;margin:0;padding:11px 1px;border-bottom:1px solid #edf0f2}
+.community-section>p,.community-section>.servants-table-wrap,.lunch-section>.lunch-table-wrap{margin:0 0 0;padding:0}
+.news{padding:0 0 24px;margin:0}
+.news>p{margin:0;padding:11px 1px}
+.church-links{padding:0 0 24px}
+.church-links h2{margin:0}
+.church-links>p{margin:0;padding:11px 1px}
