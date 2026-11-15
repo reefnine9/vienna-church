@@ -200,3 +200,53 @@ main[class*="bulletin-"] .expanded .responsive-reading-content p.responsive-read
 .praise-score-toolbar button{display:grid;place-items:center;border:0;border-radius:8px;background:#edf1f5;padding:8px;color:#24384e}
 .praise-score-overlay iframe{width:100%;flex:1;min-height:0;border:0;background:#fff}
 @media(max-width:380px){.praise-score-toolbar{padding:8px}.praise-score-toolbar a{font-size:12px}}
+
+/* Tablet and large-screen bulletin: full readable page, not a phone-width strip.
+   Public bulletin only; admin layout remains independent. */
+@media (min-width: 700px){
+  main[class*="bulletin-"]{
+    width:calc(100% - 48px);
+    max-width:1000px;
+    padding-left:clamp(28px,5vw,64px);
+    padding-right:clamp(28px,5vw,64px);
+    margin:24px auto;
+    min-height:calc(100vh - 48px);
+    border-radius:16px;
+    box-shadow:0 6px 36px rgba(28,45,68,.075);
+  }
+  main[class*="bulletin-"] header{padding-top:22px;padding-bottom:19px}
+  main[class*="bulletin-"] header .brand h1{font-size:clamp(20px,2.2vw,26px)}
+  main[class*="bulletin-"] header .tools{gap:8px}
+  main[class*="bulletin-"] header .tools button{width:42px;min-width:42px;flex-basis:42px;height:40px}
+  main[class*="bulletin-"] .datebar{padding:22px 16px;margin:12px 0 18px}
+  main[class*="bulletin-"] .datebar strong{font-size:1.22em}
+  main[class*="bulletin-"] .datebar span{font-size:.9em}
+  main[class*="bulletin-"] .notice{margin-bottom:18px;padding:11px}
+  main[class*="bulletin-"] .order,
+  main[class*="bulletin-"] .community-section h2,
+  main[class*="bulletin-"] .lunch-section h2,
+  main[class*="bulletin-"] .news h2,
+  main[class*="bulletin-"] .church-links h2{min-height:52px;padding:11px 10px}
+  main[class*="bulletin-"] .order{gap:28px}
+  main[class*="bulletin-"] .order .value{max-width:60%}
+  main[class*="bulletin-"] .expanded{padding:18px 22px}
+  main[class*="bulletin-"] .sermon{padding:17px 22px}
+  main[class*="bulletin-"] .community-sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;row-gap:6px;align-items:start}
+  main[class*="bulletin-"] .community-section{min-width:0}
+  main[class*="bulletin-"] .servants-table td{padding:9px 5px}
+  main[class*="bulletin-"] .lunch-table-wrap table{font-size:.92em}
+  main[class*="bulletin-"] .church-links{padding-bottom:32px}
+  main.bulletin-revision2 .vienna-hero{margin-left:calc(-1 * clamp(28px,5vw,64px));margin-right:calc(-1 * clamp(28px,5vw,64px));height:230px}
+  main.bulletin-revision2 .datebar{margin-left:0;margin-right:0;border-radius:12px}
+  main.bulletin-revision3 .christmas-hero{margin-left:calc(-1 * clamp(28px,5vw,64px));margin-right:calc(-1 * clamp(28px,5vw,64px));height:clamp(280px,32vw,390px)}
+}
+@media (min-width: 1100px){
+  main[class*="bulletin-"]{max-width:1060px}
+  main[class*="bulletin-"] .community-sections{column-gap:42px}
+}
+@media (min-width:700px) and (max-width:820px){
+  main[class*="bulletin-"]{width:calc(100% - 24px);margin:12px auto;padding-left:26px;padding-right:26px}
+  main.bulletin-revision2 .vienna-hero,
+  main.bulletin-revision3 .christmas-hero{margin-left:-26px;margin-right:-26px}
+  main[class*="bulletin-"] .community-sections{column-gap:18px}
+}
