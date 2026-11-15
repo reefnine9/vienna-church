@@ -110,3 +110,24 @@ main.bulletin-revision2{background:#fffefa;color:#1d2f46}
 .bulletin-revision2 .news .news-bullets li::marker{color:#b39163}
 .bulletin-revision2 .church-links a{color:#315d7d}
 @media(max-width:390px){.bulletin-revision2 .vienna-hero{height:165px}.bulletin-revision2 .vienna-hero-text{padding:28px 18px}.bulletin-revision2 .vienna-hero-text strong{font-size:23px}}
+
+/* Revision 3: Christmas photograph cover, preserving the existing bulletin below. */
+main.bulletin-revision3{background:#fffcf8;color:#1b2b3c}
+.bulletin-revision3 header{padding:16px 0;border-bottom:0;gap:8px}
+.bulletin-revision3 .brand h1{display:block;font-size:clamp(17px,4.8vw,24px);font-weight:800;letter-spacing:-.06em}
+.bulletin-revision3 .brand small{display:none}
+.bulletin-revision3 .church-cross{font-size:35px;line-height:1;color:#970d20;font-family:Georgia,serif}
+.bulletin-revision3 .tools button{border:1px solid #eadfda;background:#fff;color:#821224}
+.bulletin-revision3 .tools button:last-child{border-color:#970d20;border-radius:18px;font-weight:700;width:52px;flex-basis:52px}
+.bulletin-revision3 .christmas-hero{position:relative;height:clamp(205px,58vw,330px);margin:0 -20px 0;background:#8e4a37 url('/images/church-christmas.webp') center 44%/cover no-repeat;overflow:hidden;border-top:4px solid #980c22;border-bottom:5px solid #980c22;border-radius:0 0 48% 8% / 0 0 8% 3%}
+.bulletin-revision3 .christmas-hero:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(38,20,17,.67),rgba(38,20,17,.1) 72%)}
+.bulletin-revision3 .christmas-hero-text{position:absolute;left:8%;top:36%;color:white;text-shadow:0 2px 9px #362b25}
+.bulletin-revision3 .christmas-hero-text strong{font-size:clamp(25px,6.4vw,43px);letter-spacing:-.055em;font-weight:800}
+.bulletin-revision3 .christmas-hero-text i{display:block;margin-top:18px;width:44px;height:3px;background:#e98991}
+.bulletin-revision3 .datebar{margin:14px 0 20px;padding:18px 10px;background:#f9f1eb;border-radius:14px}
+.bulletin-revision3 .datebar strong,.bulletin-revision3 h2{color:#781529}
+.bulletin-revision3 .orders{border-top:2px solid #921b2d}
+.bulletin-revision3 .order,.bulletin-revision3 .community-section h2,.bulletin-revision3 .lunch-section h2,.bulletin-revision3 .news h2,.bulletin-revision3 .church-links h2{border-bottom-color:#eadedb}
+.bulletin-revision3 .sermon{background:#f9eee9;border-left:3px solid #97182a}
+.bulletin-revision3 .notice{background:#faf1ed}
+@media(max-width:390px){.bulletin-revision3 header .tools button{width:29px;min-width:29px;flex-basis:29px}.bulletin-revision3 header .tools button:last-child{width:46px;flex-basis:46px;font-size:12px}}
