@@ -10,3 +10,6 @@ header .brand{min-width:0;flex:1}header .brand>div{min-width:0}header .brand h1{
 .servants-table{width:100%;min-width:0;table-layout:fixed;font-size:clamp(12px,.82em,20px)}.servants-table td{white-space:normal;overflow-wrap:anywhere;padding:10px 6px;text-align:center}.servants-table td:first-child{font-weight:700;background:#f3f6fa;width:25%}.servants-table tr:first-child td{font-weight:700;background:#e9eef5}.servants-table-wrap{width:100%}
 
 .lunch-section{margin:26px 0}.lunch-section h2{background:#263c58;color:#fff;border-radius:6px;padding:10px 12px}.lunch-table-wrap{overflow-x:auto}.lunch-table-wrap table{border-collapse:collapse;width:100%;table-layout:fixed;font-size:.86em}.lunch-table-wrap th,.lunch-table-wrap td{border:1px solid #d7dde5;padding:9px 5px;text-align:center;overflow-wrap:anywhere}.lunch-table-wrap th{background:#f0f4f9;font-weight:700}
+
+/* Unified plain section headings throughout the public bulletin */
+.community-section h2,.lunch-section h2,.church-links h2{background:transparent;color:inherit;border-radius:0;padding:0;font-size:1.15em;font-weight:700;margin:10px 0 15px}
