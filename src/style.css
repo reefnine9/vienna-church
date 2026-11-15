@@ -141,3 +141,6 @@ main.bulletin-revision3{background:#fffcf8;color:#1b2b3c}
 /* Responsive reading text: preserve line breaks and readability at all font sizes. */
 .responsive-reading-content{margin-top:12px;line-height:1.85;color:#283747;overflow-wrap:anywhere}
 .responsive-reading-content p{margin:0 0 .65em;white-space:pre-wrap;color:inherit}
+
+/* Congregation and all-together responsive-reading lines. */
+.responsive-reading-content p.responsive-reading-bold{font-weight:700}
