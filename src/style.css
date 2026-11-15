@@ -79,3 +79,34 @@ main.bulletin-revision1{background:#fffdf9;color:#243044;box-shadow:0 12px 55px 
 .news .news-bullets li::marker{color:#546a7d;font-size:.9em}
 .bulletin-revision1 .news .news-bullets{padding:14px 6px 14px 1.65em;color:#5a6877;line-height:1.85}
 .bulletin-revision1 .news .news-bullets li::marker{color:#a58764}
+
+/* Revision 2: Vienna skyline editorial cover; existing basic and revision 1 untouched. */
+main.bulletin-revision2{background:#fffefa;color:#1d2f46}
+.bulletin-revision2 header{padding:14px 0;border-bottom:0}
+.bulletin-revision2 header .brand{display:none}
+.bulletin-revision2 header .tools{margin-left:auto}
+.bulletin-revision2 .tools button{background:#fff9f0;border-color:#e9dfd0;color:#273f58}
+.bulletin-revision2 .vienna-hero{position:relative;height:190px;margin:0 -20px;background:#f5eadb url('/images/vienna-bulletin-skyline.svg') center center/cover no-repeat;overflow:hidden}
+.bulletin-revision2 .vienna-hero:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,252,244,.94) 0%,rgba(255,251,243,.78) 42%,rgba(255,251,243,0) 80%)}
+.bulletin-revision2 .vienna-hero-text{position:relative;z-index:1;display:flex;flex-direction:column;gap:7px;padding:34px 23px;color:#182f4a}
+.bulletin-revision2 .vienna-hero-text strong{font-size:clamp(24px,1.9em,34px);font-weight:800;letter-spacing:-.06em;line-height:1.25}
+.bulletin-revision2 .vienna-hero-text span{font-size:clamp(10px,.76em,13px);font-weight:500;letter-spacing:.015em}
+.bulletin-revision2 .datebar{background:#faf5ec;margin:0 -20px 22px;padding:16px 20px 20px;border-bottom:1px solid #e8ddcf}
+.bulletin-revision2 .datebar strong{font-size:1.13em;color:#1b3450}
+.bulletin-revision2 .datebar span{color:#706b65}
+.bulletin-revision2 .datebar button{color:#415a71}
+.bulletin-revision2 .notice{background:#f7f4ee;color:#777168;margin-bottom:20px}
+.bulletin-revision2 h2{color:#1b3450;font-weight:750;letter-spacing:-.03em}
+.bulletin-revision2 .orders{border-top:2px solid #344f68}
+.bulletin-revision2 .order{border-bottom:1px solid #dce3e8;min-height:58px;padding:12px 5px}
+.bulletin-revision2 .value{color:#506176}
+.bulletin-revision2 .sermon{background:#edf3f8;border-radius:8px;padding:19px;border-left:3px solid #7695ac}
+.bulletin-revision2 .sermon strong{color:#203e5b}
+.bulletin-revision2 .community-section h2,.bulletin-revision2 .lunch-section h2,.bulletin-revision2 .news h2,.bulletin-revision2 .church-links h2{min-height:58px;margin:0;padding:12px 5px;border-bottom:1px solid #dce3e8;color:#1b3450;font-size:1em;font-weight:700}
+.bulletin-revision2 .servants-table-wrap,.bulletin-revision2 .lunch-table-wrap{padding:12px 0}
+.bulletin-revision2 .servants-table tr:first-child td,.bulletin-revision2 .lunch-table-wrap th{background:#e9f0f5;color:#253e57}
+.bulletin-revision2 .servants-table td:first-child{background:#f1f5f7}
+.bulletin-revision2 .news .news-bullets{color:#485c70;line-height:1.85}
+.bulletin-revision2 .news .news-bullets li::marker{color:#b39163}
+.bulletin-revision2 .church-links a{color:#315d7d}
+@media(max-width:390px){.bulletin-revision2 .vienna-hero{height:165px}.bulletin-revision2 .vienna-hero-text{padding:28px 18px}.bulletin-revision2 .vienna-hero-text strong{font-size:23px}}
