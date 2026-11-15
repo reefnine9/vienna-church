@@ -30,3 +30,45 @@ header .brand{min-width:0;flex:1}header .brand>div{min-width:0}header .brand h1{
 .church-links{padding:0 0 24px}
 .church-links h2{margin:0}
 .church-links>p{margin:0;padding:11px 1px}
+
+/* Visual design selector. The existing bulletin CSS above remains the untouched baseline. */
+.bulletin-style-switch{display:flex;align-items:center;justify-content:flex-end;gap:5px;padding:10px 0 0;font-size:12px;color:#7c8793}
+.bulletin-style-switch span{margin-right:6px}
+.bulletin-style-switch button{border:1px solid #dbe2e9;border-radius:6px;background:#fff;color:#58677a;padding:5px 11px;font-size:12px}
+.bulletin-style-switch button.selected{background:#263c58;color:#fff;border-color:#263c58;font-weight:650}
+
+/* Revision 1 — editorial, warm ivory, ink-blue accents, refined reading rhythm. */
+main.bulletin-revision1{background:#fffdf9;color:#243044;box-shadow:0 12px 55px rgba(29,42,62,.055)}
+.bulletin-revision1 header{border-bottom:1px solid #e8e1d7;padding-top:28px;padding-bottom:22px}
+.bulletin-revision1 .brand>svg{color:#9c7953}
+.bulletin-revision1 .brand h1{font-weight:750;letter-spacing:-.055em;color:#223750}
+.bulletin-revision1 .brand small{letter-spacing:.1em;color:#8e8273}
+.bulletin-revision1 .tools button{border-color:#e7e1d8;background:#fffdf9;color:#526278}
+.bulletin-revision1 .bulletin-style-switch button.selected{background:#294760;border-color:#294760}
+.bulletin-revision1 .datebar{margin:15px 0 16px;padding:24px 14px;border:1px solid #e9e2d8;border-radius:14px;background:linear-gradient(125deg,#f9f5ee 0%,#f2f5f7 100%)}
+.bulletin-revision1 .datebar strong{color:#233e58;font-weight:750;letter-spacing:-.025em}
+.bulletin-revision1 .datebar span{color:#817b76}
+.bulletin-revision1 .datebar button{color:#5b7185}
+.bulletin-revision1 .notice{background:transparent;color:#8a8176;padding:6px 2px;margin-bottom:19px;text-align:left}
+.bulletin-revision1 h2{color:#273e56;letter-spacing:-.025em}
+.bulletin-revision1 .orders{border-top:2px solid #344e66}
+.bulletin-revision1 .order{min-height:59px;border-bottom:1px solid #e9e4dd;padding:13px 6px;font-weight:590;letter-spacing:-.018em}
+.bulletin-revision1 .value{color:#627487}
+.bulletin-revision1 button.value{color:#3b637f}
+.bulletin-revision1 .sermon{background:#f5f1e9;border-left:3px solid #b69770;border-radius:4px 12px 12px 4px;padding:20px;margin:16px 0}
+.bulletin-revision1 .sermon small{color:#8c806f;font-size:.78em}
+.bulletin-revision1 .sermon strong{color:#253d54;line-height:1.5}
+.bulletin-revision1 .expanded{background:#f5f4ef}
+.bulletin-revision1 .community-section h2,.bulletin-revision1 .lunch-section h2,.bulletin-revision1 .news h2,.bulletin-revision1 .church-links h2{min-height:59px;padding:13px 6px;margin:0;border-bottom:1px solid #e9e4dd;color:#273e56;font-size:1em;font-weight:640;letter-spacing:-.018em}
+.bulletin-revision1 .community-section>p,.bulletin-revision1 .news>p,.bulletin-revision1 .church-links>p{padding:14px 6px;line-height:1.8}
+.bulletin-revision1 .servants-table-wrap,.bulletin-revision1 .lunch-table-wrap{padding:12px 0 17px}
+.bulletin-revision1 .servants-table,.bulletin-revision1 .lunch-table-wrap table{border-collapse:separate;border-spacing:0;font-size:.88em}
+.bulletin-revision1 .servants-table td,.bulletin-revision1 .lunch-table-wrap td,.bulletin-revision1 .lunch-table-wrap th{border:0;border-right:1px solid #e8e2d9;border-bottom:1px solid #e8e2d9;padding:13px 7px;line-height:1.5}
+.bulletin-revision1 .servants-table tr:first-child td,.bulletin-revision1 .lunch-table-wrap thead th{background:#eaf0f2;color:#30495f;font-weight:750;border-top:1px solid #e8e2d9}
+.bulletin-revision1 .servants-table td:first-child,.bulletin-revision1 .lunch-table-wrap tbody th{background:#f6f4ef;color:#3c4e60;font-weight:700}
+.bulletin-revision1 .servants-table tr td:first-child,.bulletin-revision1 .lunch-table-wrap tr>*:first-child{border-left:1px solid #e8e2d9}
+.bulletin-revision1 .news{padding-bottom:24px}
+.bulletin-revision1 .news p{color:#5a6877}
+.bulletin-revision1 .church-links a{color:#3b6582;text-underline-offset:3px}
+.bulletin-revision1 footer{border-top:1px solid #e8e2d9;color:#9b9082}
+@media(max-width:390px){.bulletin-style-switch{font-size:11px}.bulletin-style-switch button{padding:5px 8px}.bulletin-revision1 .datebar{padding:18px 8px}}
