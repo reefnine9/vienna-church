@@ -14,48 +14,65 @@ function loadPdfJs(){
  return loader;
 }
 export default function PdfScore({url,title='악보',full=false}){
- const host=useRef(null);const scroller=useRef(null);const [current,setCurrent]=useState(1);
- const [status,setStatus]=useState('loading');
- const [pages,setPages]=useState(0);
+ const host=useRef(null),pdfRef=useRef(null),touchStart=useRef(null);
+ const [status,setStatus]=useState('loading'),[pages,setPages]=useState(0),[current,setCurrent]=useState(1);
+ const [width,setWidth]=useState(0);
  useEffect(()=>{
-  if(!url)return;
-  let cancelled=false;let task;let pdf;const renders=[];
-  const render=async()=>{
-   setStatus('loading');setPages(0);setCurrent(1);
-   const lib=await loadPdfJs();lib.GlobalWorkerOptions.workerSrc=WORKER_URL;
-   task=lib.getDocument({url,withCredentials:false});pdf=await task.promise;
+  let cancelled=false,task;
+  pdfRef.current=null;setStatus('loading');setPages(0);setCurrent(1);
+  loadPdfJs().then(lib=>{
    if(cancelled)return;
-   const root=host.current;if(!root)return;root.replaceChildren();
-   setPages(pdf.numPages);
-   for(let n=1;n<=pdf.numPages;n++){
-    if(cancelled)break;
-    const page=await pdf.getPage(n);if(cancelled)break;
-    const available=Math.max(280,root.clientWidth-12);
-    const initial=page.getViewport({scale:1});
-    const scale=available/initial.width;
-    const viewport=page.getViewport({scale});
-    const ratio=Math.min(window.devicePixelRatio||1,2);
-    const canvas=document.createElement('canvas');
-    canvas.className='score-pdf-page';
-    canvas.width=Math.ceil(viewport.width*ratio);canvas.height=Math.ceil(viewport.height*ratio);
-    canvas.style.width='100%';canvas.style.height='auto';
-    canvas.setAttribute('aria-label',title+' '+n+'페이지');
-    const slide=document.createElement('div');slide.className='score-pdf-slide';slide.appendChild(canvas);root.appendChild(slide);
-    const ctx=canvas.getContext('2d',{alpha:false});
-    const job=page.render({canvasContext:ctx,viewport,transform:ratio===1?undefined:[ratio,0,0,ratio,0,0]});
-    renders.push(job);await job.promise;
-   }
-   if(!cancelled)setStatus('ready');
-  };
-  render().catch(e=>{if(!cancelled&&e?.name!=='RenderingCancelledException')setStatus('error')});
-  return()=>{cancelled=true;renders.forEach(job=>{try{job.cancel()}catch{}});if(task)try{task.destroy()}catch{};if(pdf)try{pdf.destroy()}catch{};};
- },[url,title,full]);
- const goTo=n=>{const next=Math.max(1,Math.min(pages,n));const el=scroller.current;if(!el)return;el.scrollTo({left:(next-1)*el.clientWidth,behavior:'smooth'});setCurrent(next)};
- const onScroll=()=>{const el=scroller.current;if(!el||!el.clientWidth)return;setCurrent(Math.max(1,Math.min(pages,Math.round(el.scrollLeft/el.clientWidth)+1)))};
- return <div className={'score-pdf-viewer'+(full?' score-pdf-full':'')}>
-  {status==='loading'&&<p className="score-pdf-status">악보를 불러오는 중입니다… {pages? '('+pages+'페이지)':''}</p>}
+   lib.GlobalWorkerOptions.workerSrc=WORKER_URL;
+   task=lib.getDocument({url,withCredentials:false});
+   return task.promise;
+  }).then(pdf=>{if(!pdf||cancelled)return;pdfRef.current=pdf;setPages(pdf.numPages);setStatus('ready')})
+    .catch(()=>{if(!cancelled)setStatus('error')});
+  return()=>{cancelled=true;pdfRef.current=null;if(task)task.destroy().catch(()=>{})};
+ },[url]);
+ useEffect(()=>{
+  const el=host.current;if(!el)return;
+  const resize=()=>setWidth(el.clientWidth);
+  resize();
+  if(typeof ResizeObserver==='undefined')return;
+  const observer=new ResizeObserver(resize);observer.observe(el);
+  return()=>observer.disconnect();
+ },[]);
+ useEffect(()=>{
+  const pdf=pdfRef.current,root=host.current;
+  if(!pdf||!root||!width)return;
+  let cancelled=false,job;
+  root.replaceChildren();
+  (async()=>{
+   const page=await pdf.getPage(current);if(cancelled)return;
+   const base=page.getViewport({scale:1});
+   const maxWidth=Math.max(100,root.clientWidth-16);
+   const maxHeight=Math.max(160,root.clientHeight-16);
+   const scale=Math.min(maxWidth/base.width,maxHeight/base.height);
+   const viewport=page.getViewport({scale});
+   const ratio=Math.min(window.devicePixelRatio||1,2);
+   const canvas=document.createElement('canvas');
+   canvas.className='score-pdf-page';
+   canvas.width=Math.ceil(viewport.width*ratio);canvas.height=Math.ceil(viewport.height*ratio);
+   canvas.style.width=viewport.width+'px';canvas.style.height=viewport.height+'px';
+   canvas.setAttribute('aria-label',title+' '+current+'페이지');
+   root.appendChild(canvas);
+   job=page.render({canvasContext:canvas.getContext('2d',{alpha:false}),viewport,transform:ratio===1?undefined:[ratio,0,0,ratio,0,0]});
+   await job.promise;
+  })().catch(e=>{if(!cancelled&&e?.name!=='RenderingCancelledException')setStatus('error')});
+  return()=>{cancelled=true;if(job)try{job.cancel()}catch{}};
+ },[current,pages,width,title,full]);
+ const goTo=n=>setCurrent(p=>Math.max(1,Math.min(pages,typeof n==='function'?n(p):n)));
+ const onTouchStart=e=>{const t=e.touches[0];touchStart.current={x:t.clientX,y:t.clientY}};
+ const onTouchEnd=e=>{
+  const start=touchStart.current;touchStart.current=null;
+  if(!start||!pages)return;
+  const t=e.changedTouches[0],dx=t.clientX-start.x,dy=t.clientY-start.y;
+  if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.2)goTo(p=>p+(dx<0?1:-1));
+ };
+ return <div className={'score-pdf-viewer score-pdf-paged'+(full?' score-pdf-full':'')}>
+  {status==='loading'&&<p className="score-pdf-status">악보를 불러오는 중입니다…</p>}
   {status==='error'&&<p className="score-pdf-status">악보를 표시하지 못했습니다. <a href={url} target="_blank" rel="noopener noreferrer">PDF 파일 열기</a></p>}
-  {pages>1&&<div className="score-pdf-navigation"><button type="button" onClick={()=>goTo(current-1)} disabled={current<=1} aria-label="이전 악보 페이지">‹</button><span>{current} / {pages} 페이지</span><button type="button" onClick={()=>goTo(current+1)} disabled={current>=pages} aria-label="다음 악보 페이지">›</button></div>}
-  <div className="score-pdf-scroll" ref={scroller} onScroll={onScroll}><div className="score-pdf-pages" ref={host}/></div>
+  {pages>1&&<div className="score-pdf-navigation"><button type="button" onClick={()=>goTo(p=>p-1)} disabled={current<=1} aria-label="이전 악보 페이지">‹</button><span>{current} / {pages} 페이지</span><button type="button" onClick={()=>goTo(p=>p+1)} disabled={current>=pages} aria-label="다음 악보 페이지">›</button></div>}
+  <div className="score-pdf-single-page" ref={host} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onKeyDown={e=>{if(e.key==='ArrowLeft')goTo(p=>p-1);if(e.key==='ArrowRight')goTo(p=>p+1)}} tabIndex={0} role="region" aria-label={title+' PDF 악보, 좌우로 페이지 넘기기'}/>
  </div>;
 }
