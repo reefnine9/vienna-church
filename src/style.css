@@ -72,3 +72,10 @@ main.bulletin-revision1{background:#fffdf9;color:#243044;box-shadow:0 12px 55px 
 .bulletin-revision1 .church-links a{color:#3b6582;text-underline-offset:3px}
 .bulletin-revision1 footer{border-top:1px solid #e8e2d9;color:#9b9082}
 @media(max-width:390px){.bulletin-style-switch{font-size:11px}.bulletin-style-switch button{padding:5px 8px}.bulletin-revision1 .datebar{padding:18px 8px}}
+
+/* Church news: aligned bullets and wrapped lines (both bulletin designs). */
+.news .news-bullets{list-style:disc outside;margin:0;padding:11px 1px 11px 1.55em;color:#526273;font-size:.95em;line-height:1.75}
+.news .news-bullets li{padding-left:.15em;margin:0 0 .5em;white-space:pre-wrap;overflow-wrap:anywhere}
+.news .news-bullets li::marker{color:#546a7d;font-size:.9em}
+.bulletin-revision1 .news .news-bullets{padding:14px 6px 14px 1.65em;color:#5a6877;line-height:1.85}
+.bulletin-revision1 .news .news-bullets li::marker{color:#a58764}
