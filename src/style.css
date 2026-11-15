@@ -265,3 +265,13 @@ main[class*="bulletin-"] .expanded .praise-score-hint{font-size:.77em;line-heigh
 @media(max-width:420px){
   .praise-score-inline iframe{height:62vh;min-height:320px}
 }
+
+/* PDF.js renders actual PDF pages as regular canvases: touch scrolling works in iOS Safari. */
+.score-pdf-viewer{width:100%;min-width:0;height:min(70vh,700px);min-height:340px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;position:relative;border:1px solid #d8e0e8;border-radius:8px;background:#e9edf1}
+.score-pdf-pages{display:flex;flex-direction:column;gap:9px;padding:6px;align-items:center}
+.score-pdf-page{display:block;max-width:100%;height:auto;background:white;box-shadow:0 1px 5px rgba(0,0,0,.13)}
+.score-pdf-status{padding:14px!important;margin:0!important;font-size:13px!important;color:#41556b!important}
+.score-pdf-status a{color:#225f99}
+.praise-score-overlay>.score-pdf-viewer{flex:1;height:auto;min-height:0;border:0;border-radius:0}
+@media(min-width:700px){.praise-score-inline .score-pdf-viewer{height:min(78vh,900px);min-height:560px}}
+@media(max-width:420px){.praise-score-inline .score-pdf-viewer{height:62vh;min-height:320px}}
