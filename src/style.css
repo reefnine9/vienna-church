@@ -250,3 +250,18 @@ main[class*="bulletin-"] .expanded .responsive-reading-content p.responsive-read
   main.bulletin-revision3 .christmas-hero{margin-left:-26px;margin-right:-26px}
   main[class*="bulletin-"] .community-sections{column-gap:18px}
 }
+
+/* In-place, collapsible score preview for phone and tablet. */
+main[class*="bulletin-"] .praise-score-panel{padding-top:10px}
+.praise-score-inline{width:100%;min-width:0}
+.praise-score-inline-actions{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.praise-score-inline-actions>span{font-size:.84em;color:#526174}
+.praise-score-inline-actions .praise-score-open{font-size:.85em;padding:8px 11px}
+.praise-score-inline iframe{display:block;width:100%;height:min(70vh,700px);min-height:340px;border:1px solid #d8e0e8;border-radius:8px;background:#fff}
+main[class*="bulletin-"] .expanded .praise-score-hint{font-size:.77em;line-height:1.5;margin:8px 0 0;color:#6b7786}
+@media(min-width:700px){
+  .praise-score-inline iframe{height:min(78vh,900px);min-height:560px}
+}
+@media(max-width:420px){
+  .praise-score-inline iframe{height:62vh;min-height:320px}
+}
