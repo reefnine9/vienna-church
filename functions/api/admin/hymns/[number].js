@@ -1,30 +1,27 @@
 import {reply,authenticated,sameOrigin} from '../../../_lib/auth.js';
 const valid=n=>/^(?:[1-9]|[1-9]\d|[1-5]\d\d|6[0-3]\d|64[0-5])$/.test(String(n));
-export async function onRequestPost({request,env,params}){
+const key=n=>'hymn-drive-'+n;
+function fileId(input){
+ const s=String(input||'').trim();
+ const m=s.match(/^https:\/\/(?:drive|docs)\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=download&)?id=)([A-Za-z0-9_-]{15,})(?:[/?&#].*)?$/);
+ return m?.[1]||(/^[A-Za-z0-9_-]{15,}$/.test(s)?s:null);
+}
+export async function onRequestGet({request,env,params}){
+ if(!await authenticated(request,env))return reply({error:'로그인이 필요합니다.'},401);
+ const n=String(params.number||'');if(!valid(n))return reply({error:'잘못된 번호'},400);
+ try{const row=await env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind(key(n)).first();return reply({exists:!!row?.body,fileId:row?.body||''})}catch{return reply({error:'database_error'},500)}
+}
+export async function onRequestPut({request,env,params}){
  if(!await authenticated(request,env))return reply({error:'로그인이 필요합니다.'},401);
  if(!sameOrigin(request))return reply({error:'요청 출처가 올바르지 않습니다.'},403);
- if(!env.SCORES)return reply({error:'R2 SCORES 저장소 연결이 필요합니다.'},503);
- const number=String(params.number||'');
- if(!valid(number))return reply({error:'찬송가 번호는 1~645장이어야 합니다.'},400);
- try{
-  const data=await request.formData(),file=data.get('file');
-  if(!file||typeof file.arrayBuffer!=='function'||file.size<5||file.size>12*1024*1024)return reply({error:'12MB 이하의 PDF 악보를 선택해 주세요.'},400);
-  const bytes=new Uint8Array(await file.arrayBuffer());
-  if(String.fromCharCode(...bytes.slice(0,5))!=='%PDF-')return reply({error:'PDF 형식이 아닙니다.'},400);
-  await env.SCORES.put('hymns/'+number+'.pdf',bytes,{httpMetadata:{contentType:'application/pdf',contentDisposition:'inline'}});
-  return reply({ok:true,url:'/api/scores/hymns/'+number+'.pdf'});
- }catch{return reply({error:'악보 업로드 실패'},500)}
+ const n=String(params.number||'');if(!valid(n))return reply({error:'찬송가 번호는 1~645장이어야 합니다.'},400);
+ let data;try{data=await request.json()}catch{return reply({error:'invalid_json'},400)}
+ const id=fileId(data?.url);if(!id)return reply({error:'Google Drive PDF 공유 링크를 확인해 주세요.'},400);
+ try{await env.DB.prepare("INSERT INTO announcements(id,title,body,starts_on,ends_on,position,active) VALUES(?,?,?,'2000-01-01','2099-12-31',0,0) ON CONFLICT(id) DO UPDATE SET body=excluded.body").bind(key(n),'찬송가 '+n+'장 Google Drive PDF',id).run();return reply({ok:true,fileId:id})}catch{return reply({error:'database_error'},500)}
 }
 export async function onRequestDelete({request,env,params}){
  if(!await authenticated(request,env))return reply({error:'로그인이 필요합니다.'},401);
  if(!sameOrigin(request))return reply({error:'요청 출처가 올바르지 않습니다.'},403);
- if(!env.SCORES)return reply({error:'R2 SCORES 저장소 연결이 필요합니다.'},503);
- const number=String(params.number||'');if(!valid(number))return reply({error:'잘못된 번호'},400);
- await env.SCORES.delete('hymns/'+number+'.pdf');return reply({ok:true});
-}
-export async function onRequestGet({request,env,params}){
- if(!await authenticated(request,env))return reply({error:'로그인이 필요합니다.'},401);
- if(!env.SCORES)return reply({error:'R2 SCORES 저장소 연결이 필요합니다.'},503);
- const number=String(params.number||'');if(!valid(number))return reply({error:'잘못된 번호'},400);
- return reply({exists:!!await env.SCORES.head('hymns/'+number+'.pdf')});
+ const n=String(params.number||'');if(!valid(n))return reply({error:'잘못된 번호'},400);
+ try{await env.DB.prepare('DELETE FROM announcements WHERE id=?').bind(key(n)).run();return reply({ok:true})}catch{return reply({error:'database_error'},500)}
 }
