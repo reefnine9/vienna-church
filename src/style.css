@@ -345,3 +345,7 @@ main.bulletin-revision1 .lunch-table-wrap td{background:#fff;background-image:no
 /* Revision 1: keep only the lower rule below each major section heading. */
 main.bulletin-revision1 h2.bulletin-section-heading,
 main.bulletin-revision1 .news h2.bulletin-section-heading{border-top:0;border-bottom:2px solid #344e66}
+
+/* PDF score toolbar: full-screen and collapse actions side by side. */
+.praise-score-inline-actions{justify-content:flex-end}
+.praise-score-inline-actions .praise-score-close{display:inline-flex;align-items:center;gap:5px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#34465b;padding:8px 11px;font-size:.85em;font-weight:650;cursor:pointer}
