@@ -31,6 +31,7 @@ export async function onRequestGet({env,params}) {
   if(hasRoster){const target=news.find(a=>a.extras);if(target)target.extras={...original,servants:roster.map(r=>r.join(' | ')).join('\n')};else news.push({body:'',extras:{servants:roster.map(r=>r.join(' | ')).join('\n')}})}
   const lunchRow=await env.DB.prepare("SELECT body FROM announcements WHERE id='church-lunch-schedule-v1'").first();
   let lunch=[];try{const all=JSON.parse(lunchRow?.body||'[]');const last=new Date(bulletin.sunday_date+'T12:00:00Z');last.setUTCDate(last.getUTCDate()+20);const end=last.toISOString().slice(0,10);lunch=Array.isArray(all)?all.filter(e=>e.date>=bulletin.sunday_date&&e.date<=end).sort((a,b)=>a.date.localeCompare(b.date)):[]}catch{}
-  return json({bulletin:{...bulletin,items:visibleItems,announcements:news,lunch,choirPdfUrl:current.choir_pdf_url||''}});
+  const choirOverride=await env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind('choir-score-weekly-'+bulletin.sunday_date).first();
+  return json({bulletin:{...bulletin,items:visibleItems,announcements:news,lunch,choirPdfUrl:choirOverride?choirOverride.body:(current.choir_pdf_url||original.choirPdfUrl||'')}});
  }catch{return json({error:'database_query_failed'},500)}
 }
