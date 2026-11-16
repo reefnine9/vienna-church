@@ -360,3 +360,9 @@ main.bulletin-revision1 .lunch-table-wrap tbody th{background:#f6f4ef;background
 .hymn-external{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .hymn-external a{display:inline-flex;align-items:center;gap:6px;color:#285f91;font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .hymn-external .praise-score-close{display:inline-flex;align-items:center;gap:5px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#34465b;padding:8px 11px;cursor:pointer}
+
+/* In-bulletin hymn sheet view; external site may disallow framing. */
+.hymn-embedded{width:100%;min-width:0}
+.hymn-embedded .hymn-external{margin-bottom:10px}
+.hymn-score-frame{display:block;width:100%;height:min(75vh,780px);min-height:440px;border:1px solid #d9e1e8;border-radius:8px;background:#fff}
+.hymn-embed-note{font-size:12px;color:#697586;line-height:1.5;margin:8px 0 0}
