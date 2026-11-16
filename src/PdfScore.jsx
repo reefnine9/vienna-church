@@ -14,7 +14,7 @@ function loadPdfJs(){
  return loader;
 }
 export default function PdfScore({url,title='악보',full=false}){
- const host=useRef(null),pdfRef=useRef(null),touchStart=useRef(null);
+ const host=useRef(null),pdfRef=useRef(null),touchStart=useRef(null),trackRef=useRef(null),animationRef=useRef(false);
  const [status,setStatus]=useState('loading'),[pages,setPages]=useState(0),[current,setCurrent]=useState(1);
  const [width,setWidth]=useState(0);
  useEffect(()=>{
@@ -37,43 +37,67 @@ export default function PdfScore({url,title='악보',full=false}){
   const observer=new ResizeObserver(resize);observer.observe(el);
   return()=>observer.disconnect();
  },[]);
+
  useEffect(()=>{
-  const pdf=pdfRef.current,root=host.current;
-  if(!pdf||!root||!width)return;
-  let cancelled=false,job;
-  root.replaceChildren();
-  (async()=>{
-   const page=await pdf.getPage(current);if(cancelled)return;
-   const base=page.getViewport({scale:1});
-   const maxWidth=Math.max(100,root.clientWidth-16);
-   // Fit to the available width, not the viewport height. Tall pages scroll vertically.
-   const scale=maxWidth/base.width;
-   const viewport=page.getViewport({scale});
-   const ratio=Math.min(window.devicePixelRatio||1,2);
-   const canvas=document.createElement('canvas');
-   canvas.className='score-pdf-page';
-   canvas.width=Math.ceil(viewport.width*ratio);canvas.height=Math.ceil(viewport.height*ratio);
-   canvas.style.width=viewport.width+'px';canvas.style.height=viewport.height+'px';
-   canvas.setAttribute('aria-label',title+' '+current+'페이지');
-   root.appendChild(canvas);
-   root.scrollTop=0;
-   job=page.render({canvasContext:canvas.getContext('2d',{alpha:false}),viewport,transform:ratio===1?undefined:[ratio,0,0,ratio,0,0]});
-   await job.promise;
-  })().catch(e=>{if(!cancelled&&e?.name!=='RenderingCancelledException')setStatus('error')});
-  return()=>{cancelled=true;if(job)try{job.cancel()}catch{}};
+  const pdf=pdfRef.current,root=host.current,track=trackRef.current;
+  if(!pdf||!root||!track||!width)return;
+  let cancelled=false;const jobs=[];
+  animationRef.current=false;
+  track.style.transition='none';track.style.transform='translateX(-33.333333%)';track.replaceChildren();
+  for(const index of [current-1,current,current+1]){
+   const slide=document.createElement('div');slide.className='score-pdf-drag-slide';track.appendChild(slide);
+   if(index<1||index>pages)continue;
+   (async()=>{
+    const page=await pdf.getPage(index);if(cancelled)return;
+    const base=page.getViewport({scale:1}),viewport=page.getViewport({scale:Math.max(100,root.clientWidth-16)/base.width});
+    const ratio=Math.min(window.devicePixelRatio||1,2),canvas=document.createElement('canvas');
+    canvas.className='score-pdf-page';canvas.width=Math.ceil(viewport.width*ratio);canvas.height=Math.ceil(viewport.height*ratio);
+    canvas.style.width=viewport.width+'px';canvas.style.height=viewport.height+'px';
+    canvas.setAttribute('aria-label',title+' '+index+'페이지');slide.appendChild(canvas);
+    const job=page.render({canvasContext:canvas.getContext('2d',{alpha:false}),viewport,transform:ratio===1?undefined:[ratio,0,0,ratio,0,0]});
+    jobs.push(job);await job.promise;
+   })().catch(e=>{if(!cancelled&&e?.name!=='RenderingCancelledException')setStatus('error')});
+  }
+  root.scrollTop=0;
+  return()=>{cancelled=true;jobs.forEach(job=>{try{job.cancel()}catch{}})};
  },[current,pages,width,title,full]);
- const goTo=n=>setCurrent(p=>Math.max(1,Math.min(pages,typeof n==='function'?n(p):n)));
- const onTouchStart=e=>{const t=e.touches[0];touchStart.current={x:t.clientX,y:t.clientY}};
- const onTouchEnd=e=>{
-  const start=touchStart.current;touchStart.current=null;
-  if(!start||!pages)return;
-  const t=e.changedTouches[0],dx=t.clientX-start.x,dy=t.clientY-start.y;
-  if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.2)goTo(p=>p+(dx<0?1:-1));
+ const goTo=n=>{if(!animationRef.current)setCurrent(p=>Math.max(1,Math.min(pages,typeof n==='function'?n(p):n)))};
+ const moveTrack=(dx,animate=false)=>{
+  const track=trackRef.current;if(!track)return;
+  track.style.transition=animate?'transform 230ms cubic-bezier(.22,.75,.3,1)':'none';
+  track.style.transform='translateX(calc(-33.333333% + '+dx+'px))';
  };
+ const onTouchStart=e=>{
+  if(e.touches.length!==1||animationRef.current)return;
+  const t=e.touches[0];touchStart.current={x:t.clientX,y:t.clientY,axis:null,time:Date.now()};
+ };
+ const onTouchMove=e=>{
+  const g=touchStart.current;if(!g||e.touches.length!==1)return;
+  const t=e.touches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
+  if(!g.axis&&Math.max(Math.abs(dx),Math.abs(dy))>7)g.axis=Math.abs(dx)>Math.abs(dy)*1.15?'x':'y';
+  if(g.axis!=='x')return;
+  if(e.cancelable)e.preventDefault();
+  moveTrack((dx>0&&current===1)||(dx<0&&current===pages)?dx*.2:dx);
+ };
+ const onTouchEnd=e=>{
+  const g=touchStart.current;touchStart.current=null;
+  if(!g||g.axis!=='x'||!pages)return;
+  const dx=e.changedTouches[0].clientX-g.x,elapsed=Math.max(1,Date.now()-g.time);
+  const threshold=Math.min(100,Math.max(45,(host.current?.clientWidth||320)*.23));
+  const direction=Math.abs(dx)>threshold||(Math.abs(dx)>25&&elapsed<220)?(dx<0?1:-1):0;
+  const target=Math.max(1,Math.min(pages,current+direction));
+  animationRef.current=true;
+  moveTrack(target===current?0:target>current?-(host.current?.clientWidth||0):(host.current?.clientWidth||0),true);
+  const track=trackRef.current;
+  let finished=false;let fallback;
+  const done=()=>{if(finished)return;finished=true;track?.removeEventListener('transitionend',done);clearTimeout(fallback);animationRef.current=false;if(target!==current)setCurrent(target);else moveTrack(0)};
+  track?.addEventListener('transitionend',done,{once:true});fallback=setTimeout(done,330);
+ };
+ const onTouchCancel=()=>{touchStart.current=null;moveTrack(0,true)};
  return <div className={'score-pdf-viewer score-pdf-paged'+(full?' score-pdf-full':'')}>
   {status==='loading'&&<p className="score-pdf-status">악보를 불러오는 중입니다…</p>}
   {status==='error'&&<p className="score-pdf-status">악보를 표시하지 못했습니다. <a href={url} target="_blank" rel="noopener noreferrer">PDF 파일 열기</a></p>}
   {pages>1&&<div className="score-pdf-navigation"><button type="button" onClick={()=>goTo(p=>p-1)} disabled={current<=1} aria-label="이전 악보 페이지">‹</button><span>{current} / {pages} 페이지</span><button type="button" onClick={()=>goTo(p=>p+1)} disabled={current>=pages} aria-label="다음 악보 페이지">›</button></div>}
-  <div className="score-pdf-single-page" ref={host} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onKeyDown={e=>{if(e.key==='ArrowLeft')goTo(p=>p-1);if(e.key==='ArrowRight')goTo(p=>p+1)}} tabIndex={0} role="region" aria-label={title+' PDF 악보, 좌우로 페이지 넘기기'}/>
+  <div className="score-pdf-single-page" ref={host} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={onTouchCancel} onKeyDown={e=>{if(e.key==='ArrowLeft')goTo(p=>p-1);if(e.key==='ArrowRight')goTo(p=>p+1)}} tabIndex={0} role="region" aria-label={title+' PDF 악보, 좌우로 페이지 넘기기'}><div className="score-pdf-drag-track" ref={trackRef}/></div>
  </div>;
 }
