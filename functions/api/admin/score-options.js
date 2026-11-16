@@ -21,5 +21,13 @@ export async function onRequestGet({env,request}){
    for(const f of tree.tree||[])if(f.type==='blob'&&/^public\/scores\/.*\.pdf$/i.test(f.path))options.add('/'+f.path.slice(7));
   }
  }catch{}
- return reply({options:[...options].sort().reverse()});
+ if(env.GOOGLE_DRIVE_API_KEY){
+  try{
+   const query="'1nqzbzyvLv-_qW4CGmAKZJpxU3mxYk6ep' in parents and mimeType = 'application/pdf' and trashed = false";
+   const u='https://www.googleapis.com/drive/v3/files?'+new URLSearchParams({q:query,fields:'nextPageToken,files(id,name,mimeType)',pageSize:'1000',key:env.GOOGLE_DRIVE_API_KEY});
+   const res=await fetch(u);
+   if(res.ok){const data=await res.json();for(const f of data.files||[])options.add('/api/scores/drive/'+f.id+'.pdf')}
+  }catch{}
+ }
+ return reply({options:[...options].sort().reverse(),driveConfigured:!!env.GOOGLE_DRIVE_API_KEY});
 }
