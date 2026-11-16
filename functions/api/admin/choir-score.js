@@ -8,9 +8,8 @@ export async function onRequestPut({env,request}){
  const date=String(data?.date||''),url=String(data?.url||'').trim();
  if(!validDate(date)||url.length>600||!validUrl(url))return reply({error:'invalid_date_or_pdf_url'},400);
  try{
-  const query=url?"INSERT INTO annual_schedule(id,sunday_date,slot,value) VALUES(?,?,?,?) ON CONFLICT(sunday_date,slot) DO UPDATE SET value=excluded.value":"DELETE FROM annual_schedule WHERE sunday_date=? AND slot='choir_pdf_url'";
-  if(url)await env.DB.prepare(query).bind(date+'-choir_pdf_url',date,'choir_pdf_url',url).run();
-  else await env.DB.prepare(query).bind(date).run();
+  const id='choir-score-weekly-'+date;
+  await env.DB.prepare("INSERT INTO announcements(id,title,body,starts_on,ends_on,position,active) VALUES(?,?,?,? ,?,0,0) ON CONFLICT(id) DO UPDATE SET body=excluded.body").bind(id,'찬양대 악보 PDF',url,date,date).run();
   return reply({ok:true,date,url});
  }catch{return reply({error:'database_error'},500)}
 }
