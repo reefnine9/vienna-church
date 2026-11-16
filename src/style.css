@@ -341,3 +341,7 @@ main.bulletin-revision1 .lunch-table-wrap table,
 main.bulletin-revision1 .lunch-table-wrap tr,
 main.bulletin-revision1 .lunch-table-wrap th,
 main.bulletin-revision1 .lunch-table-wrap td{background:#fff;background-image:none}
+
+/* Revision 1: keep only the lower rule below each major section heading. */
+main.bulletin-revision1 h2.bulletin-section-heading,
+main.bulletin-revision1 .news h2.bulletin-section-heading{border-top:0;border-bottom:2px solid #344e66}
