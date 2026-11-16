@@ -317,3 +317,10 @@ main[class*="bulletin-"] .news{margin-top:14px}
 /* Revision 1: pure white page and surrounding background. */
 body:has(main.bulletin-revision1){background:#fff}
 main.bulletin-revision1{background:#fff}
+
+/* Revision 1: framed section headings, with the standing note below the lower rule. */
+main.bulletin-revision1 h2.bulletin-section-heading,
+main.bulletin-revision1 .news h2.bulletin-section-heading{border-top:2px solid #344e66;border-bottom:2px solid #344e66;padding:12px 8px;margin:16px 0 0}
+main.bulletin-revision1 .orders{border-top:0}
+main.bulletin-revision1 h2.bulletin-section-heading + .notice{margin:0;padding:9px 6px 11px;text-align:center;background:#fff}
+main.bulletin-revision1 .news h2.bulletin-section-heading{margin-bottom:12px}
