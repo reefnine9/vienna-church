@@ -1,7 +1,25 @@
-import {reply} from '../../_lib/auth.js';
-export async function onRequestGet({env}){
+import {reply,authenticated} from '../../_lib/auth.js';
+export async function onRequestGet({env,request}){
+ if(!await authenticated(request,env))return reply({error:'unauthorized'},401);
+ const options=new Set();
  try{
   const rows=await env.DB.prepare("SELECT DISTINCT value FROM annual_schedule WHERE slot='choir_pdf_url' AND value<>'' ORDER BY value LIMIT 250").all();
-  return reply({options:(rows.results||[]).map(r=>r.value)})
- }catch{return reply({options:[]})}
+  for(const r of rows.results||[])options.add(r.value);
+ }catch{}
+ if(env.SCORES)try{
+  let cursor;
+  do{
+   const result=await env.SCORES.list({prefix:'choir/',limit:500,...(cursor?{cursor}:{})});
+   for(const obj of result.objects||[])if(obj.key.endsWith('.pdf'))options.add('/api/scores/'+obj.key);
+   cursor=result.truncated?result.cursor:null;
+  }while(cursor&&options.size<1000);
+ }catch{}
+ try{
+  const response=await fetch('https://api.github.com/repos/reefnine9/vienna-church/git/trees/main?recursive=1',{headers:{'user-agent':'vienna-church-score-list','accept':'application/vnd.github+json'}});
+  if(response.ok){
+   const tree=await response.json();
+   for(const f of tree.tree||[])if(f.type==='blob'&&/^public\/scores\/.*\.pdf$/i.test(f.path))options.add('/'+f.path.slice(7));
+  }
+ }catch{}
+ return reply({options:[...options].sort().reverse()});
 }
