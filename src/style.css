@@ -313,3 +313,7 @@ main[class*="bulletin-"] .expanded .praise-score-hint{font-size:.77em;line-heigh
 main[class*="bulletin-"] h2.bulletin-section-heading,
 main[class*="bulletin-"] .news h2.bulletin-section-heading{display:block;text-align:center;font-size:1.35em;line-height:1.4;font-weight:750;letter-spacing:-.025em;margin:14px 0 12px;padding:10px 8px;min-height:0;border-bottom:0}
 main[class*="bulletin-"] .news{margin-top:14px}
+
+/* Revision 1: pure white page and surrounding background. */
+body:has(main.bulletin-revision1){background:#fff}
+main.bulletin-revision1{background:#fff}
