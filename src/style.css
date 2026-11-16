@@ -305,3 +305,6 @@ main[class*="bulletin-"] .expanded .praise-score-hint{font-size:.77em;line-heigh
 .score-pdf-drag-track{display:flex;align-items:flex-start;width:300%;min-height:100%;transform:translateX(-33.333333%);will-change:transform}
 .score-pdf-drag-slide{box-sizing:border-box;flex:0 0 33.333333%;width:33.333333%;min-width:0;display:flex;align-items:flex-start;justify-content:center;padding:8px}
 .score-pdf-drag-slide .score-pdf-page{display:block;max-width:100%;max-height:none;flex:none;height:auto;background:white;box-shadow:0 1px 6px rgba(0,0,0,.15)}
+
+/* Clear return control for full-screen in-app PDF viewer. */
+.praise-score-toolbar .score-return-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:8px 12px;border:1px solid #cbd5e1;border-radius:9px;background:#edf1f5;color:#24384e;font-size:13px;font-weight:700;white-space:nowrap}
