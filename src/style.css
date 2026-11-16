@@ -299,3 +299,9 @@ main[class*="bulletin-"] .expanded .praise-score-hint{font-size:.77em;line-heigh
 @media(min-width:700px){
  .praise-score-inline .score-pdf-viewer{height:min(84dvh,1050px);min-height:620px}
 }
+
+/* Finger-following PDF page carousel: three neighboring pages move together. */
+.score-pdf-paged .score-pdf-single-page{display:block;padding:0;position:relative;touch-action:pan-y;overscroll-behavior-x:contain}
+.score-pdf-drag-track{display:flex;align-items:flex-start;width:300%;min-height:100%;transform:translateX(-33.333333%);will-change:transform}
+.score-pdf-drag-slide{box-sizing:border-box;flex:0 0 33.333333%;width:33.333333%;min-width:0;display:flex;align-items:flex-start;justify-content:center;padding:8px}
+.score-pdf-drag-slide .score-pdf-page{display:block;max-width:100%;max-height:none;flex:none;height:auto;background:white;box-shadow:0 1px 6px rgba(0,0,0,.15)}
