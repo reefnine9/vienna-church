@@ -349,3 +349,9 @@ main.bulletin-revision1 .news h2.bulletin-section-heading{border-top:0;border-bo
 /* PDF score toolbar: full-screen and collapse actions side by side. */
 .praise-score-inline-actions{justify-content:flex-end}
 .praise-score-inline-actions .praise-score-close{display:inline-flex;align-items:center;gap:5px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#34465b;padding:8px 11px;font-size:.85em;font-weight:650;cursor:pointer}
+
+/* Revision 1: matching colored headers for both service and lunch tables. */
+main.bulletin-revision1 .servants-table tr:first-child td,
+main.bulletin-revision1 .lunch-table-wrap thead th{background:#eaf0f2;background-image:none;color:#30495f;font-weight:750}
+main.bulletin-revision1 .servants-table tr:not(:first-child) td:first-child,
+main.bulletin-revision1 .lunch-table-wrap tbody th{background:#f6f4ef;background-image:none;color:#3c4e60;font-weight:700}
