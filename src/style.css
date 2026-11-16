@@ -324,3 +324,20 @@ main.bulletin-revision1 .news h2.bulletin-section-heading{border-top:2px solid #
 main.bulletin-revision1 .orders{border-top:0}
 main.bulletin-revision1 h2.bulletin-section-heading + .notice{margin:0;padding:9px 6px 11px;text-align:center;background:#fff}
 main.bulletin-revision1 .news h2.bulletin-section-heading{margin-bottom:12px}
+
+/* Revision 1 white-only surfaces, including date panel and all roster tables. */
+main.bulletin-revision1 .datebar{background:#fff;background-image:none}
+main.bulletin-revision1 .notice,
+main.bulletin-revision1 .expanded,
+main.bulletin-revision1 .sermon,
+main.bulletin-revision1 .community-section,
+main.bulletin-revision1 .news,
+main.bulletin-revision1 .lunch-section,
+main.bulletin-revision1 .servants-table,
+main.bulletin-revision1 .lunch-table-wrap,
+main.bulletin-revision1 .servants-table tr,
+main.bulletin-revision1 .servants-table td,
+main.bulletin-revision1 .lunch-table-wrap table,
+main.bulletin-revision1 .lunch-table-wrap tr,
+main.bulletin-revision1 .lunch-table-wrap th,
+main.bulletin-revision1 .lunch-table-wrap td{background:#fff;background-image:none}
