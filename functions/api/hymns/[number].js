@@ -6,6 +6,6 @@ export async function onRequestGet({env,params}){
   const row=await env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind('hymn-drive-'+n).first();
   const id=row?.body||'';
   const exists=/^[A-Za-z0-9_-]{15,}$/.test(id);
-  return new Response(JSON.stringify({exists,url:exists?'/api/scores/google/'+id+'.pdf':''}),{headers});
+  return new Response(JSON.stringify({exists:true,url:exists?'/api/scores/google/'+id+'.pdf':'/api/scores/bibletoppt/'+n,source:exists?'drive':'bibletoppt'}),{headers});
  }catch{return new Response(JSON.stringify({exists:false,error:'database_error'}),{status:503,headers})}
 }
