@@ -355,3 +355,8 @@ main.bulletin-revision1 .servants-table tr:first-child td,
 main.bulletin-revision1 .lunch-table-wrap thead th{background:#eaf0f2;background-image:none;color:#30495f;font-weight:750}
 main.bulletin-revision1 .servants-table tr:not(:first-child) td:first-child,
 main.bulletin-revision1 .lunch-table-wrap tbody th{background:#f6f4ef;background-image:none;color:#3c4e60;font-weight:700}
+
+/* External hymn score link (BibleToPPT). */
+.hymn-external{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.hymn-external a{display:inline-flex;align-items:center;gap:6px;color:#285f91;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.hymn-external .praise-score-close{display:inline-flex;align-items:center;gap:5px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#34465b;padding:8px 11px;cursor:pointer}
