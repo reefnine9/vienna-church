@@ -23,3 +23,10 @@
 .choir-file-picker label{display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:650;color:#34465a}
 .choir-file-picker select,.choir-file-picker input[type=file]{display:block;box-sizing:border-box;width:100%;max-width:100%;padding:10px;border:1px solid #d4dee8;border-radius:8px;background:#fff;color:#293c52;font-size:13px}
 @media(max-width:650px){.choir-file-picker{grid-template-columns:1fr}}
+
+
+.admin-likes-reset{margin-top:22px;padding:16px;border:1px solid #f2cbd1;border-radius:12px;background:#fffafa}
+.admin-likes-reset strong{display:block;font-size:15px;color:#783243}
+.admin-likes-reset p{font-size:13px;color:#665963;line-height:1.55;margin:8px 0 12px}
+.admin-likes-reset button{border:1px solid #c63d58;border-radius:8px;background:#fff;color:#ba2948;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer}
+.admin-likes-reset button:disabled{opacity:.55;cursor:wait}
