@@ -24,8 +24,9 @@ export default function PdfScore({url,title='악보',full=false}){
  const undo=()=>{const list=drawings.current[current]||[];if(!list.length)return;drawings.current[current]=list.slice(0,-1);saveDrawings()};
  const clearPage=()=>{if(!window.confirm('현재 페이지의 개인 마킹을 모두 지울까요?'))return;drawings.current[current]=[];saveDrawings()};
  const pointFor=(e,svg)=>{const r=svg.getBoundingClientRect();return [Math.max(0,Math.min(1000,(e.clientX-r.left)/r.width*1000)),Math.max(0,Math.min(1000,(e.clientY-r.top)/r.height*1000))]};
- const startInk=(e,svg,index)=>{if(tool!=='pen'||e.button!==0)return;e.preventDefault();e.stopPropagation();svg.setPointerCapture(e.pointerId);const stroke={color:ink,points:[pointFor(e,svg)]};activeStroke.current={index,stroke};drawings.current[index]=[...(drawings.current[index]||[]),stroke];setRevision(v=>v+1)};
- const moveInk=(e,svg)=>{if(!activeStroke.current)return;e.preventDefault();activeStroke.current.stroke.points.push(pointFor(e,svg));setRevision(v=>v+1)};
+ const eraseAt=(e,svg,index)=>{const p=pointFor(e,svg),list=drawings.current[index]||[];const next=list.filter(stroke=>!stroke.points?.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<22));if(next.length!==list.length){drawings.current[index]=next;saveDrawings()}};
+ const startInk=(e,svg,index)=>{if((tool!=='pen'&&tool!=='eraser')||e.button!==0)return;e.preventDefault();e.stopPropagation();svg.setPointerCapture(e.pointerId);if(tool==='eraser'){activeStroke.current={index,eraser:true};eraseAt(e,svg,index);return}const stroke={color:ink,points:[pointFor(e,svg)]};activeStroke.current={index,stroke};drawings.current[index]=[...(drawings.current[index]||[]),stroke];setRevision(v=>v+1)};
+ const moveInk=(e,svg)=>{if(!activeStroke.current)return;e.preventDefault();if(activeStroke.current.eraser){eraseAt(e,svg,activeStroke.current.index);return}activeStroke.current.stroke.points.push(pointFor(e,svg));setRevision(v=>v+1)};
  const finishInk=()=>{if(!activeStroke.current)return;activeStroke.current=null;saveDrawings()};
 
  useEffect(()=>{
@@ -77,7 +78,7 @@ export default function PdfScore({url,title='악보',full=false}){
  },[current,pages,width,title,full]);
  const startInkRef=useRef(null),moveInkRef=useRef(null),finishInkRef=useRef(null);
  startInkRef.current=startInk;moveInkRef.current=moveInk;finishInkRef.current=finishInk;
- useEffect(()=>{const track=trackRef.current;if(!track)return;for(const svg of track.querySelectorAll('svg[data-mark-page]')){const index=Number(svg.dataset.markPage);svg.style.pointerEvents=tool==='pen'?'auto':'none';svg.replaceChildren();for(const stroke of drawings.current[index]||[]){if(!Array.isArray(stroke.points)||!stroke.points.length)continue;const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',stroke.points.map((p,i)=>(i?'L':'M')+p[0]+' '+p[1]).join(' ')+(stroke.points.length===1?' l 0.1 0.1':''));path.setAttribute('fill','none');path.setAttribute('stroke',stroke.color||'#e5484d');path.setAttribute('stroke-width','3.5');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');svg.appendChild(path)}}},[revision,current,tool,width,pages]);
+ useEffect(()=>{const track=trackRef.current;if(!track)return;for(const svg of track.querySelectorAll('svg[data-mark-page]')){const index=Number(svg.dataset.markPage);svg.style.pointerEvents=tool==='pen'||tool==='eraser'?'auto':'none';svg.replaceChildren();for(const stroke of drawings.current[index]||[]){if(!Array.isArray(stroke.points)||!stroke.points.length)continue;const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',stroke.points.map((p,i)=>(i?'L':'M')+p[0]+' '+p[1]).join(' ')+(stroke.points.length===1?' l 0.1 0.1':''));path.setAttribute('fill','none');path.setAttribute('stroke',stroke.color||'#e5484d');path.setAttribute('stroke-width','3.5');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');svg.appendChild(path)}}},[revision,current,tool,width,pages]);
  const goTo=n=>{if(!animationRef.current)setCurrent(p=>Math.max(1,Math.min(pages,typeof n==='function'?n(p):n)))};
  const moveTrack=(dx,animate=false)=>{
   const track=trackRef.current;if(!track)return;
@@ -85,11 +86,11 @@ export default function PdfScore({url,title='악보',full=false}){
   track.style.transform='translateX(calc(-33.333333% + '+dx+'px))';
  };
  const onTouchStart=e=>{
-  if(tool==='pen'||e.touches.length!==1||animationRef.current)return;
+  if(tool!=='move'||e.touches.length!==1||animationRef.current)return;
   const t=e.touches[0];touchStart.current={x:t.clientX,y:t.clientY,axis:null,time:Date.now()};
  };
  const onTouchMove=e=>{
-  const g=touchStart.current;if(tool==='pen'||!g||e.touches.length!==1)return;
+  const g=touchStart.current;if(tool!=='move'||!g||e.touches.length!==1)return;
   const t=e.touches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
   if(!g.axis&&Math.max(Math.abs(dx),Math.abs(dy))>7)g.axis=Math.abs(dx)>Math.abs(dy)*1.15?'x':'y';
   if(g.axis!=='x')return;
@@ -97,7 +98,7 @@ export default function PdfScore({url,title='악보',full=false}){
   moveTrack((dx>0&&current===1)||(dx<0&&current===pages)?dx*.2:dx);
  };
  const onTouchEnd=e=>{
-  const g=touchStart.current;touchStart.current=null;if(tool==='pen')return;
+  const g=touchStart.current;touchStart.current=null;if(tool!=='move')return;
   if(!g||g.axis!=='x'||!pages)return;
   const dx=e.changedTouches[0].clientX-g.x,elapsed=Math.max(1,Date.now()-g.time);
   const threshold=Math.min(100,Math.max(45,(host.current?.clientWidth||320)*.23));
@@ -114,7 +115,7 @@ export default function PdfScore({url,title='악보',full=false}){
  return <div className={'score-pdf-viewer score-pdf-paged'+(full?' score-pdf-full':'')}>
   {status==='loading'&&<p className="score-pdf-status">악보를 불러오는 중입니다…</p>}
   {status==='error'&&<p className="score-pdf-status">악보를 표시하지 못했습니다. <a href={url} target="_blank" rel="noopener noreferrer">PDF 파일 열기</a></p>}
-  {status==='ready'&&(()=>{const controls=<div className="score-mark-toolbar"><button type="button" title="이동" aria-label="이동" aria-pressed={tool==='move'} onClick={()=>setTool('move')}>↔</button><button type="button" title="펜" aria-label="펜" aria-pressed={tool==='pen'} onClick={()=>setTool('pen')}>✎</button>{['#e5484d','#2476db','#222222'].map(c=><button type="button" key={c} onClick={()=>{setInk(c);setTool('pen')}} aria-label={c==='#e5484d'?'빨강':c==='#2476db'?'파랑':'검정'} title={c==='#e5484d'?'빨강':c==='#2476db'?'파랑':'검정'} className={'score-ink-color'+(ink===c?' selected':'')} style={{background:c}}/>)}<button type="button" title="되돌리기" aria-label="되돌리기" onClick={undo}>↶</button><button type="button" title="현재 페이지 지우기" aria-label="현재 페이지 지우기" onClick={clearPage}>⌫</button></div>;const slot=full?document.getElementById('score-mark-toolbar-slot'):null;return slot?createPortal(controls,slot):controls})()}
+  {status==='ready'&&(()=>{const controls=<div className="score-mark-toolbar"><button type="button" title="이동 및 페이지 넘기기" aria-label="이동" aria-pressed={tool==='move'} onClick={()=>setTool('move')}>↔</button><button type="button" title="빨간펜" aria-label="빨간펜" aria-pressed={tool==='pen'} onClick={()=>{setInk('#e5484d');setTool('pen')}} style={{color:'#e5484d'}}>✎</button><button type="button" title="지우개" aria-label="지우개" aria-pressed={tool==='eraser'} onClick={()=>setTool('eraser')}>⌫</button></div>;const slot=full?document.getElementById('score-mark-toolbar-slot'):null;return slot?createPortal(controls,slot):controls})()}
   {pages>1&&<div className="score-pdf-navigation"><button type="button" onClick={()=>goTo(p=>p-1)} disabled={current<=1} aria-label="이전 악보 페이지">‹</button><span>{current} / {pages} 페이지</span><button type="button" onClick={()=>goTo(p=>p+1)} disabled={current>=pages} aria-label="다음 악보 페이지">›</button></div>}
   <div className="score-pdf-single-page" ref={host} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={onTouchCancel} onKeyDown={e=>{if(e.key==='ArrowLeft')goTo(p=>p-1);if(e.key==='ArrowRight')goTo(p=>p+1)}} tabIndex={0} role="region" aria-label={title+' PDF 악보, 좌우로 페이지 넘기기'}><div className="score-pdf-drag-track" ref={trackRef}/></div>
  </div>;
