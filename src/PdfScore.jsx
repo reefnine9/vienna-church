@@ -65,7 +65,7 @@ export default function PdfScore({url,title='악보',full=false}){
     canvas.style.width=viewport.width+'px';canvas.style.height=viewport.height+'px';
     canvas.setAttribute('aria-label',title+' '+index+'페이지');
     const sheet=document.createElement('div');sheet.style.cssText='position:relative;display:inline-block;line-height:0;max-width:100%';sheet.appendChild(canvas);slide.appendChild(sheet);
-    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 1000 1000');svg.setAttribute('preserveAspectRatio','none');svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;touch-action:none;pointer-events:none';svg.dataset.markPage=String(index);sheet.appendChild(svg);
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 1000 1000');svg.setAttribute('preserveAspectRatio','none');svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;touch-action:none;pointer-events:none';svg.dataset.markPage=String(index);sheet.appendChild(svg);setRevision(v=>v+1);
     svg.addEventListener('pointerdown',e=>startInkRef.current(e,svg,index));svg.addEventListener('pointermove',e=>moveInkRef.current(e,svg));svg.addEventListener('pointerup',()=>finishInkRef.current());svg.addEventListener('pointercancel',()=>finishInkRef.current());
     const job=page.render({canvasContext:canvas.getContext('2d',{alpha:false}),viewport,transform:ratio===1?undefined:[ratio,0,0,ratio,0,0]});
     jobs.push(job);await job.promise;
