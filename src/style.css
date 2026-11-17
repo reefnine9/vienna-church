@@ -444,3 +444,16 @@ main[class*="bulletin-"] header .church-like-wrap .bulletin-like:disabled{opacit
 @keyframes church-heart-float{0%{opacity:0;transform:translate(-50%,0) scale(.5)}18%{opacity:1}70%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.15)}}
 @media(max-width:420px){main[class*="bulletin-"] header .brand{gap:3px}main[class*="bulletin-"] header .brand h1{font-size:clamp(16px,4.3vw,19px)}main[class*="bulletin-"] header .church-like-wrap .bulletin-like{min-width:37px;height:31px;padding:0 3px;font-size:11px}main[class*="bulletin-"] header .church-like-wrap .bulletin-like svg{width:15px;height:15px}}
 @media(prefers-reduced-motion:reduce){.church-heart-burst svg{animation:none;display:none}}
+
+
+/* Instagram/TikTok Live-style independent hearts, starting BELOW the compact header. */
+.church-live-hearts-layer{position:fixed;inset:0;z-index:999;pointer-events:none;overflow:hidden}
+.church-live-heart{position:absolute;display:block;line-height:1;opacity:0;pointer-events:none;user-select:none;font-family:Arial,sans-serif;will-change:transform,opacity;animation:church-live-float var(--duration) cubic-bezier(.25,.35,.38,1) forwards}
+@keyframes church-live-float{
+ 0%{opacity:0;transform:translate3d(-50%,0,0) scale(.55) rotate(-10deg)}
+ 12%{opacity:1}
+ 30%{transform:translate3d(calc(-50% + var(--x1)),-48px,0) scale(1) rotate(9deg)}
+ 60%{opacity:.95;transform:translate3d(calc(-50% + var(--x2)),calc(var(--rise) * -.62),0) scale(.94) rotate(-10deg)}
+ 100%{opacity:0;transform:translate3d(calc(-50% + var(--x3)),calc(var(--rise) * -1),0) scale(1.15) rotate(14deg)}
+}
+@media(prefers-reduced-motion:reduce){.church-live-heart{display:none;animation:none}}
