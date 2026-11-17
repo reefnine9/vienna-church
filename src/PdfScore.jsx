@@ -18,7 +18,7 @@ function loadPdfJs(){
 export default function PdfScore({url,title='악보',full=false}){
  const host=useRef(null),pdfRef=useRef(null),touchStart=useRef(null),trackRef=useRef(null),animationRef=useRef(false);
  const [status,setStatus]=useState('loading'),[pages,setPages]=useState(0),[current,setCurrent]=useState(1);
- const [width,setWidth]=useState(0),[tool,setTool]=useState('move'),[ink,setInk]=useState('#e5484d'),[revision,setRevision]=useState(0);
+ const [width,setWidth]=useState(0),[viewHeight,setViewHeight]=useState(0),[tool,setTool]=useState('move'),[ink,setInk]=useState('#e5484d'),[revision,setRevision]=useState(0);
  const drawings=useRef({}),activeStroke=useRef(null),storageKey='vienna-church:pdf-markings:v1:'+encodeURIComponent(url);
  useEffect(()=>{try{const saved=JSON.parse(localStorage.getItem(storageKey)||'{}');drawings.current=saved&&typeof saved==='object'?saved:{}}catch{drawings.current={}}setRevision(v=>v+1)},[storageKey]);
  const saveDrawings=()=>{try{localStorage.setItem(storageKey,JSON.stringify(drawings.current))}catch{}setRevision(v=>v+1)};
@@ -44,7 +44,7 @@ export default function PdfScore({url,title='악보',full=false}){
  },[url]);
  useEffect(()=>{
   const el=host.current;if(!el)return;
-  const resize=()=>setWidth(el.clientWidth);
+  const resize=()=>{setWidth(el.clientWidth);setViewHeight(el.clientHeight)};
   resize();
   if(typeof ResizeObserver==='undefined')return;
   const observer=new ResizeObserver(resize);observer.observe(el);
@@ -62,7 +62,7 @@ export default function PdfScore({url,title='악보',full=false}){
    if(index<1||index>pages)continue;
    (async()=>{
     const page=await pdf.getPage(index);if(cancelled)return;
-    const base=page.getViewport({scale:1}),viewport=page.getViewport({scale:Math.max(100,root.clientWidth-16)/base.width});
+    const base=page.getViewport({scale:1}),availableWidth=Math.max(100,root.clientWidth-16),availableHeight=Math.max(100,root.clientHeight-16),scale=full?Math.min(availableWidth/base.width,availableHeight/base.height):availableWidth/base.width,viewport=page.getViewport({scale});
     const ratio=Math.min(window.devicePixelRatio||1,2),canvas=document.createElement('canvas');
     canvas.className='score-pdf-page';canvas.width=Math.ceil(viewport.width*ratio);canvas.height=Math.ceil(viewport.height*ratio);
     canvas.style.width=viewport.width+'px';canvas.style.height=viewport.height+'px';
@@ -76,7 +76,7 @@ export default function PdfScore({url,title='악보',full=false}){
   }
   root.scrollTop=0;
   return()=>{cancelled=true;jobs.forEach(job=>{try{job.cancel()}catch{}})};
- },[current,pages,width,title,full]);
+ },[current,pages,width,viewHeight,title,full]);
  const startInkRef=useRef(null),moveInkRef=useRef(null),finishInkRef=useRef(null);
  startInkRef.current=startInk;moveInkRef.current=moveInk;finishInkRef.current=finishInk;
  useEffect(()=>{const track=trackRef.current;if(!track)return;for(const svg of track.querySelectorAll('svg[data-mark-page]')){const index=Number(svg.dataset.markPage);svg.style.pointerEvents=tool==='pen'||tool==='eraser'?'auto':'none';svg.replaceChildren();for(const stroke of drawings.current[index]||[]){if(!Array.isArray(stroke.points)||!stroke.points.length)continue;const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',stroke.points.map((p,i)=>(i?'L':'M')+p[0]+' '+p[1]).join(' ')+(stroke.points.length===1?' l 0.1 0.1':''));path.setAttribute('fill','none');path.setAttribute('stroke',stroke.color||'#e5484d');path.setAttribute('stroke-width','3.5');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');svg.appendChild(path)}}},[revision,current,tool,width,pages]);
