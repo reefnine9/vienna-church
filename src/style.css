@@ -397,3 +397,12 @@ main.bulletin-revision1 .lunch-table-wrap tbody th{background:#f6f4ef;background
 #score-page-navigation-slot .score-pdf-navigation button{width:32px;min-width:32px;height:32px;font-size:20px}
 .praise-score-toolbar .score-header-actions{justify-content:flex-end;gap:5px}
 @media(max-width:600px){#score-page-navigation-slot .score-pdf-navigation{gap:3px;font-size:11px}#score-page-navigation-slot .score-pdf-navigation button{width:27px;min-width:27px;height:32px;font-size:18px}.praise-score-toolbar .score-header-actions{gap:4px}}
+
+
+/* Consistent page arrows: SVG centered inside equal-size header controls. */
+#score-page-navigation-slot .score-pdf-navigation{display:flex;align-items:center;gap:5px;height:38px;line-height:1}
+#score-page-navigation-slot .score-pdf-navigation button,
+.praise-score-toolbar #score-page-navigation-slot .score-pdf-navigation button{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;flex:0 0 38px;width:38px;min-width:38px;height:38px;min-height:38px;padding:0;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#263d55;line-height:1}
+#score-page-navigation-slot .score-pdf-navigation button svg{display:block;flex:none;width:17px;height:17px}
+#score-page-navigation-slot .score-pdf-navigation span{display:block;white-space:nowrap;line-height:1.2;font-size:12px}
+@media(max-width:600px){#score-page-navigation-slot .score-pdf-navigation{height:32px;gap:3px}#score-page-navigation-slot .score-pdf-navigation button,.praise-score-toolbar #score-page-navigation-slot .score-pdf-navigation button{flex-basis:32px;width:32px;min-width:32px;height:32px;min-height:32px}#score-page-navigation-slot .score-pdf-navigation span{font-size:11px}}
