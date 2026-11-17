@@ -1,5 +1,5 @@
 const COOKIE='vienna_church_like';
-const cookieValue=request=>{const match=(request.headers.get('Cookie')||'').match(/(?:^|;\\s*)vienna_church_like=([a-f0-9-]{36})/);return match?.[1]||null};
+const cookieValue=request=>{const match=(request.headers.get('Cookie')||'').match(/(?:^|;\s*)vienna_church_like=([a-f0-9-]{36})/);return match?.[1]||null};
 const response=(data,init={})=>new Response(JSON.stringify(data),{...init,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store',...(init.headers||{})}});
 async function ensureTable(db){await db.prepare('CREATE TABLE IF NOT EXISTS bulletin_likes (visitor_id TEXT PRIMARY KEY, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run()}
 export async function onRequestGet({request,env}){try{if(!env.DB)return response({error:'Database unavailable'},{status:503});await ensureTable(env.DB);const count=await env.DB.prepare('SELECT COUNT(*) AS total FROM bulletin_likes').first();const visitor=cookieValue(request);const liked=visitor?!!(await env.DB.prepare('SELECT 1 AS found FROM bulletin_likes WHERE visitor_id=?').bind(visitor).first()):false;return response({count:Number(count?.total||0),liked})}catch{return response({error:'Unable to load likes'},{status:500})}}
