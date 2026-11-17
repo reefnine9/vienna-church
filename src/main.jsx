@@ -4,7 +4,7 @@ function sunday(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.
 function dateKey(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 function withoutOldLunchTable(news,lunch){if(!lunch?.length)return news;const lines=(news||'').split('\n');const out=[];for(let i=0;i<lines.length;){const line=lines[i];if(/^\s*\|/.test(line)&&/날짜/.test(line)){let j=i;const group=[];while(j<lines.length&&/^\s*\|/.test(lines[j]))group.push(lines[j++]);if(group.some(x=>/담당|정리/.test(x))){i=j;continue}}out.push(line);i++}return out.join('\n').replace(/\n{3,}/g,'\n\n').trim()}
 function NewsBullets({text}){const lines=(text||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(!lines.length)return <p>이번 주 교회 소식은 아직 등록되지 않았습니다.</p>;return <ul className="news-bullets">{lines.map((line,i)=><li key={i}>{line.replace(/^(?:[•●▪◦]|[-*]|\d+[.)])\s*/,'')}</li>)}</ul>}
-function dateText(s){return new Date(s+'T12:00:00').toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'})}
+function dateText(s){return new Date(s+'T12:00:00').toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'}).replace(/일요일/g,'주일')}
 function ResponsiveReading({value}){
  const match=String(value||'').match(/(?:^|\D)(\d{1,3})\s*(?:번|호)?/);
  const number=match?Number(match[1]):null;
