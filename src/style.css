@@ -415,3 +415,15 @@ main[class*="bulletin-"] .servants-table-wrap{display:block;width:100%;max-width
 main[class*="bulletin-"] .servants-table{width:100%;min-width:0;max-width:100%;table-layout:fixed;border-collapse:collapse}
 main[class*="bulletin-"] .servants-table td{box-sizing:border-box;min-width:0;white-space:normal;overflow-wrap:anywhere;word-break:keep-all;text-align:center}
 main[class*="bulletin-"] .servants-table td:first-child{width:auto}
+
+
+/* Church identity and persistent likes: centered, single-line mobile header. */
+main[class*="bulletin-"] header .brand{display:flex;align-items:center;min-width:0;gap:7px}
+main[class*="bulletin-"] header .brand>div{display:flex;align-items:center;min-width:0}
+main[class*="bulletin-"] header .brand h1{display:block;margin:0;line-height:1.15;font-size:clamp(20px,4.7vw,27px);font-weight:750;letter-spacing:-.05em;white-space:nowrap}
+main[class*="bulletin-"] header .brand small{display:none}
+main[class*="bulletin-"] header .tools{align-items:center}
+main[class*="bulletin-"] header .tools .bulletin-like{display:inline-flex;align-items:center;justify-content:center;gap:3px;flex:0 0 auto;width:auto;min-width:43px;padding:0 5px;color:#b44357;font-size:12px;font-weight:650}
+main[class*="bulletin-"] header .tools .bulletin-like.is-liked{color:#d13d58;background:#fff5f6}
+main[class*="bulletin-"] header .tools .bulletin-like:disabled{cursor:default;opacity:1}
+@media(max-width:420px){main[class*="bulletin-"] header .brand h1{font-size:clamp(17px,4.6vw,21px)}main[class*="bulletin-"] header .brand{gap:4px}main[class*="bulletin-"] header .brand>svg{width:20px;height:20px}main[class*="bulletin-"] header .tools .bulletin-like{min-width:39px;padding:0 3px}}
