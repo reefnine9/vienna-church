@@ -427,3 +427,20 @@ main[class*="bulletin-"] header .tools .bulletin-like{display:inline-flex;align-
 main[class*="bulletin-"] header .tools .bulletin-like.is-liked{color:#d13d58;background:#fff5f6}
 main[class*="bulletin-"] header .tools .bulletin-like:disabled{cursor:default;opacity:1}
 @media(max-width:420px){main[class*="bulletin-"] header .brand h1{font-size:clamp(17px,4.6vw,21px)}main[class*="bulletin-"] header .brand{gap:4px}main[class*="bulletin-"] header .brand>svg{width:20px;height:20px}main[class*="bulletin-"] header .tools .bulletin-like{min-width:39px;padding:0 3px}}
+
+
+/* Red repeatable likes immediately beside the church name. */
+main[class*="bulletin-"] header .brand{flex:1;min-width:0}
+main[class*="bulletin-"] header .church-like-wrap{position:relative;display:flex;align-items:center;flex:0 0 auto;margin-left:2px}
+main[class*="bulletin-"] header .church-like-wrap .bulletin-like{display:inline-flex;align-items:center;justify-content:center;gap:3px;min-width:42px;width:auto;height:34px;padding:0 5px;border:1px solid #f1d4da;border-radius:9px;background:#fff7f8;color:#d8304c;font-size:12px;font-weight:700;cursor:pointer}
+main[class*="bulletin-"] header .church-like-wrap .bulletin-like:disabled{opacity:.75}
+.church-heart-burst{position:absolute;left:50%;top:10px;width:0;height:0;pointer-events:none;z-index:5}
+.church-heart-burst svg{position:absolute;width:15px;height:15px;fill:#e54860;stroke:#e54860;opacity:0;animation:church-heart-float .9s ease-out forwards}
+.church-heart-burst svg:nth-child(1){--dx:-35px;--dy:-52px;animation-delay:0ms}
+.church-heart-burst svg:nth-child(2){--dx:-15px;--dy:-75px;animation-delay:70ms}
+.church-heart-burst svg:nth-child(3){--dx:13px;--dy:-66px;animation-delay:40ms}
+.church-heart-burst svg:nth-child(4){--dx:36px;--dy:-43px;animation-delay:110ms}
+.church-heart-burst svg:nth-child(5){--dx:2px;--dy:-91px;animation-delay:90ms}
+@keyframes church-heart-float{0%{opacity:0;transform:translate(-50%,0) scale(.5)}18%{opacity:1}70%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.15)}}
+@media(max-width:420px){main[class*="bulletin-"] header .brand{gap:3px}main[class*="bulletin-"] header .brand h1{font-size:clamp(16px,4.3vw,19px)}main[class*="bulletin-"] header .church-like-wrap .bulletin-like{min-width:37px;height:31px;padding:0 3px;font-size:11px}main[class*="bulletin-"] header .church-like-wrap .bulletin-like svg{width:15px;height:15px}}
+@media(prefers-reduced-motion:reduce){.church-heart-burst svg{animation:none;display:none}}
