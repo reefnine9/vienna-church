@@ -33,3 +33,9 @@
 
 .admin-sermon-title{grid-column:1/-1;display:flex;flex-direction:column;gap:5px;width:100%}
 .admin-sermon-title input{width:100%;box-sizing:border-box}
+
+.admin-scripture-editor{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #dce6f1;border-radius:9px;background:#f8fafc}
+.admin-scripture-editor label{display:flex;flex-direction:column;gap:7px}
+.admin-scripture-editor textarea{width:100%;box-sizing:border-box;resize:vertical;line-height:1.65}
+.admin-scripture-editor .admin-save{align-self:flex-start}
+.admin-scripture-editor p{margin:0}
