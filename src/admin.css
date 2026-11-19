@@ -39,3 +39,5 @@
 .admin-scripture-editor textarea{width:100%;box-sizing:border-box;resize:vertical;line-height:1.65}
 .admin-scripture-editor .admin-save{align-self:flex-start}
 .admin-scripture-editor p{margin:0}
+
+.admin-bible-selectors{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}.admin-bible-selectors label{min-width:0}.admin-bible-selectors select{display:block;width:100%;min-width:0;padding:9px 6px;border:1px solid #cbd5e1;border-radius:7px;background:#fff;color:#172033;font:inherit}.admin-scripture-editor textarea{display:block;width:100%;box-sizing:border-box;margin-top:6px;line-height:1.65}@media(max-width:640px){.admin-bible-selectors{grid-template-columns:repeat(2,minmax(0,1fr))}}
