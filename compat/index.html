@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="비엔나교회 모바일 주보" />
+    <link rel="manifest" href="/compat/manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/vienna-church-192.png" />
+    <title>비엔나교회 주보</title>
+    <style>
+      .compat-controls:not([hidden]) {
+        max-width: 620px;
+        margin: 0 auto;
+        padding: 8px 20px 0;
+        background: #fff;
+        text-align: right;
+      }
+
+      #compat-fullscreen {
+        min-height: 36px;
+        padding: 4px 10px;
+        border: 1px solid #e2e6eb;
+        border-radius: 8px;
+        background: #fff;
+        color: #26394b;
+        font-size: 14px;
+      }
+
+      #compat-status:not(:empty) {
+        display: block;
+        margin-top: 4px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="compat-controls" class="compat-controls" hidden>
+      <button id="compat-fullscreen" type="button">전체 화면</button>
+      <span id="compat-status" role="status"></span>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <script type="module">
+      const controls = document.getElementById('compat-controls');
+      const fullscreen = document.getElementById('compat-fullscreen');
+      const status = document.getElementById('compat-status');
+
+      if (document.fullscreenEnabled) {
+        controls.hidden = false;
+        document.addEventListener('fullscreenchange', () => {
+          fullscreen.textContent = document.fullscreenElement ? '전체 화면 닫기' : '전체 화면';
+        });
+
+        fullscreen.addEventListener('click', async () => {
+          status.textContent = '';
+          try {
+            if (document.fullscreenElement) {
+              await document.exitFullscreen();
+            } else {
+              await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
+            }
+          } catch {
+            status.textContent = '이 브라우저에서 전체 화면으로 전환할 수 없습니다.';
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "id": "/compat/",
+  "name": "비엔나교회 주보",
+  "short_name": "비엔나교회 주보",
+  "lang": "ko",
+  "start_url": "/compat/",
+  "scope": "/compat/",
+  "display": "browser",
+  "icons": [
+    {
+      "src": "/icons/vienna-church-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
