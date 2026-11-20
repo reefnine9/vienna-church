@@ -15,7 +15,7 @@ function loadPdfJs(){
  }).catch(e=>{loader=null;throw e});
  return loader;
 }
-export default function PdfScore({url,title='악보',full=false}){
+export default function PdfScore({url,title='악보',full=false,onDocumentLoad}){
  const host=useRef(null),pdfRef=useRef(null),touchStart=useRef(null),trackRef=useRef(null),animationRef=useRef(false);
  const [status,setStatus]=useState('loading'),[pages,setPages]=useState(0),[current,setCurrent]=useState(1);
  const [width,setWidth]=useState(0),[viewHeight,setViewHeight]=useState(0),[tool,setTool]=useState('move'),[ink,setInk]=useState('#e5484d'),[revision,setRevision]=useState(0);
@@ -38,10 +38,10 @@ export default function PdfScore({url,title='악보',full=false}){
    lib.GlobalWorkerOptions.workerSrc=WORKER_URL;
    task=lib.getDocument({url,withCredentials:false});
    return task.promise;
-  }).then(pdf=>{if(!pdf||cancelled)return;pdfRef.current=pdf;setPages(pdf.numPages);setStatus('ready')})
-    .catch(()=>{if(!cancelled)setStatus('error')});
+  }).then(pdf=>{if(!pdf||cancelled)return;pdfRef.current=pdf;setPages(pdf.numPages);setStatus('ready');onDocumentLoad?.(pdf)})
+    .catch(()=>{if(!cancelled){setStatus('error');onDocumentLoad?.(null)}});
   return()=>{cancelled=true;pdfRef.current=null;if(task)task.destroy().catch(()=>{})};
- },[url]);
+ },[url,onDocumentLoad]);
  useEffect(()=>{
   const el=host.current;if(!el)return;
   const resize=()=>{setWidth(el.clientWidth);setViewHeight(el.clientHeight)};
