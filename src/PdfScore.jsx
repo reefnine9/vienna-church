@@ -4,6 +4,8 @@ import {ChevronLeft,ChevronRight,Eraser} from 'lucide-react';
 
 const PDFJS_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
 const WORKER_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const FIT_SCORE = { scale: 1, x: 0, y: 0 };
+const MAX_SCORE_ZOOM = 4;
 let loader;
 function loadPdfJs(){
  if(window.pdfjsLib)return Promise.resolve(window.pdfjsLib);
@@ -15,9 +17,22 @@ function loadPdfJs(){
  }).catch(e=>{loader=null;throw e});
  return loader;
 }
-export default function PdfScore({url,title='악보',full=false,onDocumentLoad}){
+function scoreTouchPoint(touches) {
+  const first = touches[0];
+  const second = touches[1];
+  if (!second) return { x: first.clientX, y: first.clientY, distance: null };
+  return {
+    x: (first.clientX + second.clientX) / 2,
+    y: (first.clientY + second.clientY) / 2,
+    distance: Math.max(1, Math.hypot(first.clientX - second.clientX, first.clientY - second.clientY)),
+  };
+}
+
+export default function PdfScore({url,title='악보',full=false,pinchZoom=false,onDocumentLoad}){
  const host=useRef(null),pdfRef=useRef(null),touchStart=useRef(null),trackRef=useRef(null),animationRef=useRef(null);
  const renderedPages=useRef(new Map()),visiblePage=useRef(1),pendingPage=useRef(null);
+ const zoomView = useRef(FIT_SCORE);
+ const zoomGesture = useRef(null);
  const [status,setStatus]=useState('loading'),[pages,setPages]=useState(0),[current,setCurrent]=useState(1);
  const [width,setWidth]=useState(0),[viewHeight,setViewHeight]=useState(0),[tool,setTool]=useState('move'),[ink,setInk]=useState('#e5484d'),[revision,setRevision]=useState(0);
  const [renderAttempt,setRenderAttempt]=useState(0);
@@ -59,6 +74,13 @@ export default function PdfScore({url,title='악보',full=false,onDocumentLoad})
   const observer=new ResizeObserver(resize);observer.observe(el);
   return()=>observer.disconnect();
  },[]);
+
+ useLayoutEffect(() => {
+  const sheet = renderedPages.current.get(visiblePage.current)?.sheet;
+  if (zoomView.current.scale > 1 && sheet) sheet.style.transform = '';
+  zoomView.current = FIT_SCORE;
+  zoomGesture.current = null;
+ }, [current, url, width, viewHeight, pinchZoom]);
 
  useLayoutEffect(()=>{
   visiblePage.current=current;
@@ -146,20 +168,75 @@ export default function PdfScore({url,title='악보',full=false,onDocumentLoad})
   track.addEventListener('transitionend',done);
   moveTrack(0,true,target);
  }
+
+ function beginZoomGesture(touches) {
+  const page = renderedPages.current.get(current);
+  if (!page?.canvas) return;
+  zoomGesture.current = {
+   fingers: touches.length,
+   start: scoreTouchPoint(touches),
+   view: zoomView.current,
+   viewport: host.current.getBoundingClientRect(),
+   sheet: page.sheet,
+   sheetWidth: page.sheet.offsetWidth,
+   sheetHeight: page.sheet.offsetHeight,
+  };
+ }
+
+ function updateZoomGesture(touches) {
+  const { start, view, viewport, sheet, sheetWidth, sheetHeight } = zoomGesture.current;
+  const point = scoreTouchPoint(touches);
+  const scale = start.distance === null
+   ? view.scale
+   : Math.max(1, Math.min(MAX_SCORE_ZOOM, view.scale * point.distance / start.distance));
+  const ratio = scale / view.scale;
+  const centerX = viewport.left + viewport.width / 2;
+  const centerY = viewport.top + viewport.height / 2;
+  const x = point.x - centerX - (start.x - centerX - view.x) * ratio;
+  const y = point.y - centerY - (start.y - centerY - view.y) * ratio;
+  const limitX = Math.max(0, (sheetWidth * scale - viewport.width) / 2);
+  const limitY = Math.max(0, (sheetHeight * scale - viewport.height) / 2);
+  zoomView.current = {
+   scale,
+   x: Math.max(-limitX, Math.min(limitX, x)),
+   y: Math.max(-limitY, Math.min(limitY, y)),
+  };
+  // Keep the PDF and its pen marks registered while scaling the rendered sheet.
+  sheet.style.transform = scale === 1 ? '' : `translate(${zoomView.current.x}px, ${zoomView.current.y}px) scale(${scale})`;
+ }
+
  const onTouchStart=e=>{
-  if(tool!=='move'||e.touches.length!==1||animationRef.current||pendingPage.current!==null)return;
+  if(tool!=='move'||animationRef.current||pendingPage.current!==null)return;
+  const fingers = e.touches.length;
+  if (pinchZoom && (fingers >= 2 || zoomView.current.scale > 1)) {
+   if (touchStart.current?.axis === 'x') moveTrack(0);
+   touchStart.current = null;
+   zoomGesture.current = null;
+   if (fingers <= 2) beginZoomGesture(e.touches);
+   return;
+  }
+  if (fingers !== 1) return;
   const t=e.touches[0];touchStart.current={x:t.clientX,y:t.clientY,axis:null,time:Date.now()};
  };
  const onTouchMove=e=>{
+  if (tool === 'move' && zoomGesture.current) {
+   if (e.touches.length === zoomGesture.current.fingers) updateZoomGesture(e.touches);
+   return;
+  }
   const g=touchStart.current;if(tool!=='move'||!g||e.touches.length!==1)return;
   const t=e.touches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
   if(!g.axis&&Math.max(Math.abs(dx),Math.abs(dy))>7)g.axis=Math.abs(dx)>Math.abs(dy)*1.15?'x':'y';
   if(g.axis!=='x')return;
-  if(e.cancelable)e.preventDefault();
+  if(!pinchZoom&&e.cancelable)e.preventDefault();
   const target=current+(dx<0?1:-1),width=host.current.clientWidth;
   moveTrack(renderedPages.current.get(target)?.canvas?Math.max(-width,Math.min(width,dx)):0);
  };
  const onTouchEnd=e=>{
+  if (zoomGesture.current) {
+   zoomGesture.current = null;
+   if (e.touches.length === 1 && zoomView.current.scale > 1) beginZoomGesture(e.touches);
+   return;
+  }
   const g=touchStart.current;touchStart.current=null;if(tool!=='move')return;
   if(!g||g.axis!=='x'||!pages)return;
   const dx=e.changedTouches[0].clientX-g.x,elapsed=Math.max(1,Date.now()-g.time);
@@ -168,12 +245,12 @@ export default function PdfScore({url,title='악보',full=false,onDocumentLoad})
   const target=Math.max(1,Math.min(pages,current+direction));
   if(target===current)moveTrack(0,true);else goTo(target,true);
  };
- const onTouchCancel=()=>{touchStart.current=null;moveTrack(0,true)};
+ const onTouchCancel=()=>{zoomGesture.current=null;touchStart.current=null;moveTrack(0,true)};
  return <div className={'score-pdf-viewer score-pdf-paged'+(full?' score-pdf-full':'')}>
   {status==='loading'&&<p className="score-pdf-status">악보를 불러오는 중입니다…</p>}
   {status==='error'&&<p className="score-pdf-status">악보를 표시하지 못했습니다. <a href={url} target="_blank" rel="noopener noreferrer">PDF 파일 열기</a></p>}
   {status==='ready'&&(()=>{const controls=<div className="score-mark-toolbar"><button type="button" title="이동 및 페이지 넘기기" aria-label="이동" aria-pressed={tool==='move'} onClick={()=>setTool('move')}>↔</button><button type="button" title="빨간펜" aria-label="빨간펜" aria-pressed={tool==='pen'} onClick={()=>{setInk('#e5484d');setTool('pen')}} style={{color:'#e5484d'}}>✎</button><button type="button" title="지우개" aria-label="지우개" aria-pressed={tool==='eraser'} onClick={()=>setTool('eraser')}><Eraser size={18} strokeWidth={2}/></button></div>;const slot=full?document.getElementById('score-mark-toolbar-slot'):null;return slot?createPortal(controls,slot):controls})()}
   {pages>1&&(()=>{const navigation=<div className="score-pdf-navigation"><button type="button" onClick={()=>goTo(current-1)} disabled={current<=1} aria-label="이전 악보 페이지"><ChevronLeft size={17} strokeWidth={2}/></button><span>{current} / {pages} 페이지</span><button type="button" onClick={()=>goTo(current+1)} disabled={current>=pages} aria-label="다음 악보 페이지"><ChevronRight size={17} strokeWidth={2}/></button></div>;const slot=full?document.getElementById("score-page-navigation-slot"):null;return slot?createPortal(navigation,slot):navigation})()}
-  <div className="score-pdf-single-page" ref={host} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={onTouchCancel} onKeyDown={e=>{if(e.key==='ArrowLeft')goTo(current-1);if(e.key==='ArrowRight')goTo(current+1)}} tabIndex={0} role="region" aria-label={title+' PDF 악보, 좌우로 페이지 넘기기'}><div className="score-pdf-drag-track" ref={trackRef}/></div>
+  <div className={'score-pdf-single-page'+(pinchZoom?' score-pdf-zoomable':'')} ref={host} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={onTouchCancel} onKeyDown={e=>{if(e.key==='ArrowLeft')goTo(current-1);if(e.key==='ArrowRight')goTo(current+1)}} tabIndex={0} role="region" aria-label={title+(pinchZoom?' PDF 악보, 두 손가락으로 확대·축소, 좌우로 페이지 넘기기':' PDF 악보, 좌우로 페이지 넘기기')}><div className="score-pdf-drag-track" ref={trackRef}/></div>
  </div>;
 }
