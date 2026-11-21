@@ -1,7 +1,50 @@
-const response=(data,init={})=>new Response(JSON.stringify(data),{...init,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store',...(init.headers||{})}});
-const dayFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Vienna',year:'numeric',month:'2-digit',day:'2-digit'});
-const viennaDay=date=>dayFormatter.format(date);
-async function ensureTables(db){await db.prepare('CREATE TABLE IF NOT EXISTS bulletin_likes (visitor_id TEXT PRIMARY KEY, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run();await db.prepare('CREATE TABLE IF NOT EXISTS bulletin_like_clicks (id TEXT PRIMARY KEY, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)').run()}
-async function todayTotal(db){const today=viennaDay(new Date());const [old,newer]=await Promise.all([db.prepare("SELECT created_at FROM bulletin_likes WHERE created_at >= datetime('now','-2 days')").all(),db.prepare("SELECT created_at FROM bulletin_like_clicks WHERE created_at >= datetime('now','-2 days')").all()]);const count=[...(old.results||[]),...(newer.results||[])].filter(row=>viennaDay(new Date(row.created_at.replace(' ','T')+'Z'))===today).length;return {count,date:today}}
-export async function onRequestGet({env}){try{if(!env.DB)return response({error:'Database unavailable'},{status:503});await ensureTables(env.DB);return response(await todayTotal(env.DB))}catch{return response({error:'Unable to load likes'},{status:500})}}
-export async function onRequestPost({request,env}){try{if(!env.DB)return response({error:'Database unavailable'},{status:503});const origin=request.headers.get('Origin');if(origin&&new URL(origin).origin!==new URL(request.url).origin)return response({error:'Invalid origin'},{status:403});await ensureTables(env.DB);await env.DB.prepare('INSERT INTO bulletin_like_clicks (id) VALUES (?)').bind(crypto.randomUUID()).run();return response(await todayTotal(env.DB))}catch{return response({error:'Unable to save like'},{status:500})}}
+import { ensureLikesSchema, likeDayRange, likesTimestamp } from '../_lib/likes.js';
+
+const response = (data, status = 200) => new Response(JSON.stringify(data), {
+  status,
+  headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
+});
+
+function countLikes(db, { start, end }) {
+  return db.prepare(`
+    SELECT
+      (SELECT COUNT(*) FROM bulletin_likes WHERE created_at >= ?1 AND created_at < ?2)
+      + (SELECT COUNT(*) FROM bulletin_like_clicks WHERE created_at >= ?1 AND created_at < ?2)
+      AS count
+  `).bind(start, end);
+}
+
+export async function onRequestGet({ env }) {
+  const db = env.DB;
+  if (!db) return response({ error: 'Database unavailable' }, 503);
+  try {
+    await ensureLikesSchema(db);
+    const day = likeDayRange();
+    const { count } = await countLikes(db, day).first();
+    return response({ count, date: day.date });
+  } catch {
+    return response({ error: 'Unable to load likes' }, 500);
+  }
+}
+
+export async function onRequestPost({ request, env }) {
+  const db = env.DB;
+  if (!db) return response({ error: 'Database unavailable' }, 503);
+  try {
+    const origin = request.headers.get('Origin');
+    if (origin && new URL(origin).origin !== new URL(request.url).origin) {
+      return response({ error: 'Invalid origin' }, 403);
+    }
+    await ensureLikesSchema(db);
+    const now = new Date();
+    const day = likeDayRange(now);
+    const [, result] = await db.batch([
+      db.prepare('INSERT INTO bulletin_like_clicks (id, created_at) VALUES (?, ?)')
+        .bind(crypto.randomUUID(), likesTimestamp(now)),
+      countLikes(db, day),
+    ]);
+    return response({ count: result.results[0].count, date: day.date });
+  } catch {
+    return response({ error: 'Unable to save like' }, 500);
+  }
+}
