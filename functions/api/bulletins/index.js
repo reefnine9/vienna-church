@@ -1,10 +1,12 @@
+import { bulletinReadError } from '../../_lib/temporary-bulletin.js';
+
 // Public read-only endpoint. Never return draft bulletins or expose D1 writes.
 const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}});
 const validDate=s=>/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(Date.parse(s+'T12:00:00Z'))&&new Date(s+'T12:00:00Z').toISOString().slice(0,10)===s;
-export async function onRequestGet({env,params}) {
- if(!env.DB)return json({error:'database_not_configured'},503);
+export async function onRequestGet({env,params={}}) {
  const date=Array.isArray(params.date)?params.date[0]:params.date;
  if(date&&!validDate(date))return json({error:'invalid_date'},400);
+ if(!env.DB)return bulletinReadError(date,json,'database_not_configured',503);
  try{
   let bulletin;
   if(date)bulletin=await env.DB.prepare("SELECT id,sunday_date,service_time,sermon_title,scripture_reference,preacher FROM bulletins WHERE sunday_date=? AND status='published'").bind(date).first();
@@ -32,5 +34,5 @@ export async function onRequestGet({env,params}) {
   const lunchRow=await env.DB.prepare("SELECT body FROM announcements WHERE id='church-lunch-schedule-v1'").first();
   let lunch=[];try{const all=JSON.parse(lunchRow?.body||'[]');const last=new Date(bulletin.sunday_date+'T12:00:00Z');last.setUTCDate(last.getUTCDate()+20);const end=last.toISOString().slice(0,10);lunch=Array.isArray(all)?all.filter(e=>e.date>=bulletin.sunday_date&&e.date<=end).sort((a,b)=>a.date.localeCompare(b.date)):[]}catch{}
   return json({bulletin:{...bulletin,items:visibleItems,announcements:news,lunch,choirPdfUrl:current.choir_pdf_url||''}});
- }catch{return json({error:'database_query_failed'},500)}
+ }catch{return bulletinReadError(date,json,'database_query_failed',500)}
 }
