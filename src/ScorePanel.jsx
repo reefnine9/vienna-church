@@ -25,10 +25,8 @@ function fallbackLink(url, fileName, loadFailed) {
     : { href: source.href, target: '_blank', label: 'PDF 파일 열기' };
 }
 
-export default function ScorePanel({ url, title, shortLabels = false, onExpand, onClose }) {
+export default function ScorePanel({ url, title, onExpand, onClose }) {
   const fileName = `${title} 악보.pdf`;
-  const appLabel = shortLabels ? '앱열기' : 'PDF 앱으로 열기';
-  const expandLabel = shortLabels ? '크게' : '화면 크게 보기';
   const [pdf, setPdf] = useState();
   const [file, setFile] = useState(null);
   const [shareUnavailable, setShareUnavailable] = useState(() =>
@@ -63,12 +61,12 @@ export default function ScorePanel({ url, title, shortLabels = false, onExpand, 
     <div className="praise-score-inline-actions">
       <div className="praise-score-open-actions">
         {!useFallback && <button type="button" className="praise-score-open" disabled={!file} aria-busy={!file} onClick={openInApp}>
-          {file ? appLabel : 'PDF 준비 중…'} <FileText size={15}/>
+          {file ? '앱열기' : 'PDF 준비 중…'} <FileText size={15}/>
         </button>}
         {link && <a className="praise-score-open" href={link.href} download={link.download} target={link.target} rel={link.target ? 'noopener noreferrer' : undefined}>
           {link.label} {link.download ? <Download size={15}/> : <ExternalLink size={15}/>}
         </a>}
-        <button type="button" className="praise-score-open" onClick={onExpand}>{expandLabel} <ExternalLink size={15}/></button>
+        <button type="button" className="praise-score-open" onClick={onExpand}>크게 <ExternalLink size={15}/></button>
       </div>
       <button type="button" className="praise-score-close" onClick={onClose} aria-label="악보 접기">닫기 <X size={15}/></button>
     </div>
