@@ -116,7 +116,7 @@ main.bulletin-revision3{background:#fffcf8;color:#1b2b3c}
 .bulletin-revision3 header{padding:16px 0;border-bottom:0;gap:8px}
 .bulletin-revision3 .brand h1{display:block;font-size:clamp(17px,4.8vw,24px);font-weight:800;letter-spacing:-.06em}
 .bulletin-revision3 .brand small{display:none}
-.bulletin-revision3 .church-cross{font-size:35px;line-height:1;color:#970d20;font-family:Georgia,serif}
+.bulletin-revision3 .church-cross{font-size:45.5px;line-height:1;color:#970d20;font-family:Georgia,serif}
 .bulletin-revision3 .tools button{border:1px solid #eadfda;background:#fff;color:#821224}
 .bulletin-revision3 .tools button:last-child{border-color:#970d20;border-radius:18px;font-weight:700;width:52px;flex-basis:52px}
 .bulletin-revision3 .christmas-hero{position:relative;height:clamp(205px,58vw,330px);margin:0 -20px 0;background:#8e4a37 url('/images/church-christmas-original.jpg') center 44%/cover no-repeat;overflow:hidden;border-top:4px solid #980c22;border-bottom:5px solid #980c22;border-radius:0 0 48% 8% / 0 0 8% 3%}
@@ -419,20 +419,28 @@ main[class*="bulletin-"] .servants-table td{box-sizing:border-box;min-width:0;wh
 main[class*="bulletin-"] .servants-table td:first-child{width:auto}
 
 
-/* Church identity and persistent likes: centered, single-line mobile header. */
+/* Keep the church identity together when the toolbar needs a second line. */
+main[class*="bulletin-"] header {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+main[class*="bulletin-"] header .brand > svg {
+  width: 30px;
+  height: 30px;
+}
 main[class*="bulletin-"] header .brand{display:flex;align-items:center;min-width:0;gap:7px}
 main[class*="bulletin-"] header .brand>div{display:flex;align-items:center;min-width:0}
-main[class*="bulletin-"] header .brand h1{display:block;margin:0;line-height:1.15;font-size:clamp(20px,4.7vw,27px);font-weight:750;letter-spacing:-.05em;white-space:nowrap}
+main[class*="bulletin-"] header .brand h1{display:block;margin:0;line-height:1.15;font-size:clamp(26px,6.11vw,35.1px);font-weight:750;letter-spacing:-.05em;white-space:nowrap}
 main[class*="bulletin-"] header .brand small{display:none}
-main[class*="bulletin-"] header .tools{align-items:center}
+main[class*="bulletin-"] header .tools{align-items:center;margin-left:auto}
 main[class*="bulletin-"] header .tools .bulletin-like{display:inline-flex;align-items:center;justify-content:center;gap:3px;flex:0 0 auto;width:auto;min-width:43px;padding:0 5px;color:#b44357;font-size:12px;font-weight:650}
 main[class*="bulletin-"] header .tools .bulletin-like.is-liked{color:#d13d58;background:#fff5f6}
 main[class*="bulletin-"] header .tools .bulletin-like:disabled{cursor:default;opacity:1}
-@media(max-width:420px){main[class*="bulletin-"] header .brand h1{font-size:clamp(17px,4.6vw,21px)}main[class*="bulletin-"] header .brand{gap:4px}main[class*="bulletin-"] header .brand>svg{width:20px;height:20px}main[class*="bulletin-"] header .tools .bulletin-like{min-width:39px;padding:0 3px}}
+@media(max-width:420px){main[class*="bulletin-"] header .brand{gap:4px}main[class*="bulletin-"] header .brand>svg{width:26px;height:26px}main[class*="bulletin-"] header .tools .bulletin-like{min-width:39px;padding:0 3px}}
 
 
 /* Red repeatable likes immediately beside the church name. */
-main[class*="bulletin-"] header .brand{flex:1;min-width:0}
+main[class*="bulletin-"] header .brand{flex:1 1 auto;min-width:0}
 main[class*="bulletin-"] header .church-like-wrap{position:relative;display:flex;align-items:center;flex:0 0 auto;margin-left:2px}
 main[class*="bulletin-"] header .church-like-wrap .bulletin-like{display:inline-flex;align-items:center;justify-content:center;gap:3px;min-width:42px;width:auto;height:34px;padding:0 5px;border:1px solid #f1d4da;border-radius:9px;background:#fff7f8;color:#d8304c;font-size:12px;font-weight:700;cursor:pointer}
 main[class*="bulletin-"] header .church-like-wrap .bulletin-like:disabled{opacity:.75}
@@ -444,7 +452,7 @@ main[class*="bulletin-"] header .church-like-wrap .bulletin-like:disabled{opacit
 .church-heart-burst svg:nth-child(4){--dx:36px;--dy:-43px;animation-delay:110ms}
 .church-heart-burst svg:nth-child(5){--dx:2px;--dy:-91px;animation-delay:90ms}
 @keyframes church-heart-float{0%{opacity:0;transform:translate(-50%,0) scale(.5)}18%{opacity:1}70%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.15)}}
-@media(max-width:420px){main[class*="bulletin-"] header .brand{gap:3px}main[class*="bulletin-"] header .brand h1{font-size:clamp(16px,4.3vw,19px)}main[class*="bulletin-"] header .church-like-wrap .bulletin-like{min-width:37px;height:31px;padding:0 3px;font-size:11px}main[class*="bulletin-"] header .church-like-wrap .bulletin-like svg{width:15px;height:15px}}
+@media(max-width:420px){main[class*="bulletin-"] header .brand{gap:3px}main[class*="bulletin-"] header .brand h1{font-size:clamp(20.8px,5.59vw,24.7px)}main[class*="bulletin-"] header .church-like-wrap .bulletin-like{min-width:37px;height:31px;padding:0 3px;font-size:11px}main[class*="bulletin-"] header .church-like-wrap .bulletin-like svg{width:15px;height:15px}}
 @media(prefers-reduced-motion:reduce){.church-heart-burst svg{animation:none;display:none}}
 
 
