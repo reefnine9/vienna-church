@@ -1,27 +1,19 @@
-import { ensureLikesSchema, likeDayRange, likesTimestamp } from '../_lib/likes.js';
+import { likeDayRange, likeDayTotal, likesTimestamp, withLikesSchema } from '../_lib/likes.js';
 
 const response = (data, status = 200) => new Response(JSON.stringify(data), {
   status,
   headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
 });
 
-function countLikes(db, { start, end }) {
-  return db.prepare(`
-    SELECT
-      (SELECT COUNT(*) FROM bulletin_likes WHERE created_at >= ?1 AND created_at < ?2)
-      + (SELECT COUNT(*) FROM bulletin_like_clicks WHERE created_at >= ?1 AND created_at < ?2)
-      AS count
-  `).bind(start, end);
-}
-
 export async function onRequestGet({ env }) {
   const db = env.DB;
   if (!db) return response({ error: 'Database unavailable' }, 503);
   try {
-    await ensureLikesSchema(db);
-    const day = likeDayRange();
-    const { count } = await countLikes(db, day).first();
-    return response({ count, date: day.date });
+    const { date, start, end } = likeDayRange();
+    const { count } = await withLikesSchema(db, () =>
+      db.prepare(`SELECT ${likeDayTotal} AS count`).bind(date, start, end).first()
+    );
+    return response({ count, date });
   } catch {
     return response({ error: 'Unable to load likes' }, 500);
   }
@@ -35,15 +27,19 @@ export async function onRequestPost({ request, env }) {
     if (origin && new URL(origin).origin !== new URL(request.url).origin) {
       return response({ error: 'Invalid origin' }, 403);
     }
-    await ensureLikesSchema(db);
     const now = new Date();
-    const day = likeDayRange(now);
-    const [, result] = await db.batch([
+    const { date, start, end } = likeDayRange(now);
+    const id = crypto.randomUUID();
+    const [, result] = await withLikesSchema(db, () => db.batch([
       db.prepare('INSERT INTO bulletin_like_clicks (id, created_at) VALUES (?, ?)')
-        .bind(crypto.randomUUID(), likesTimestamp(now)),
-      countLikes(db, day),
-    ]);
-    return response({ count: result.results[0].count, date: day.date });
+        .bind(id, likesTimestamp(now)),
+      db.prepare(`
+        INSERT INTO bulletin_like_totals (day, count) VALUES (?1, ${likeDayTotal})
+        ON CONFLICT(day) DO UPDATE SET count = bulletin_like_totals.count + 1
+        RETURNING count
+      `).bind(date, start, end),
+    ]));
+    return response({ count: result.results[0].count, date });
   } catch {
     return response({ error: 'Unable to save like' }, 500);
   }
