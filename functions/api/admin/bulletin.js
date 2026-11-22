@@ -14,10 +14,14 @@ const rosterDates=date=>Array.from({length:3},(_,i)=>{const d=new Date(date+'T12
 const shortDate=d=>Number(d.slice(5,7))+'/'+Number(d.slice(8,10));
 const annualRowSlots={'경배 찬송':'opening_hymn','교독':'responsive_reading','교독문':'responsive_reading','대표 기도':'prayer_leader','봉헌 찬송':'offertory_hymn'};
 
-async function findReviewedNews(db, date) {
+function previousSundayFor(date) {
  const previous = new Date(date + 'T12:00:00Z');
  previous.setUTCDate(previous.getUTCDate() - 7);
- const previousSunday = previous.toISOString().slice(0, 10);
+ return previous.toISOString().slice(0, 10);
+}
+
+async function findReviewedNews(db, date) {
+ const previousSunday = previousSundayFor(date);
  let rows;
  try {
   const result = await db.prepare('SELECT body FROM announcements WHERE id IN (?, ?)')
@@ -54,7 +58,50 @@ async function annualRoster(env,date,stored=''){
  return {servants:rows.map(row=>row.join(' | ')).join('\n'),dates};
 }
 
-export async function onRequestGet({env,request}){const date=new URL(request.url).searchParams.get('date');if(!validDate(date))return fail('invalid_sunday');try{const b=await env.DB.prepare('SELECT * FROM bulletins WHERE sunday_date=?').bind(date).first();if(!b){const roster=await annualRoster(env,date);const annual=await annualValues(env,date);return reply({bulletin:null,annualServants:roster.servants,annualChoirPdfUrl:annual.choir_pdf_url||''})}const [rows,ann]=await Promise.all([env.DB.prepare('SELECT title,detail,kind,standing FROM worship_items WHERE bulletin_id=? ORDER BY position').bind(b.id).all(),env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind('weekly-'+date).first()]);const extras=(()=>{try{return JSON.parse(ann?.body||'').extras||{}}catch{return {}}})();const annual=await annualValues(env,date);const choirOverride=await env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind('choir-score-weekly-'+date).first();const editorRows=(rows.results||[]).map(r=>({name:r.title,value:r.detail,kind:r.kind,standing:!!r.standing}));editorRows.forEach((r,i)=>{const slot=rowSlot(r,i,editorRows);if(slot&&Object.hasOwn(annual,slot))r.value=annual[slot]});extras.choirPdfUrl=choirOverride?choirOverride.body:(annual.choir_pdf_url||extras.choirPdfUrl||'');extras.servants=(await annualRoster(env,date,extras.servants||'')).servants;return reply({bulletin:{date:b.sunday_date,time:b.service_time,sermon:b.sermon_title,scripture:b.scripture_reference,preacher:b.preacher,rows:editorRows,news:readStoredNews(date,ann?.body||''),extras,status:b.status}})}catch{return fail('database_error',500)}}
+async function previousWeekNews(db, date) {
+ const previousSunday = previousSundayFor(date);
+ const announcement = await db.prepare('SELECT body FROM announcements WHERE id=?').bind('weekly-' + previousSunday).first();
+ return readStoredNews(previousSunday, announcement?.body ?? '');
+}
+
+export async function onRequestGet({ env, request }) {
+ const date = new URL(request.url).searchParams.get('date');
+ if (!validDate(date)) return fail('invalid_sunday');
+ try {
+  const bulletin = await env.DB.prepare('SELECT * FROM bulletins WHERE sunday_date=?').bind(date).first();
+  if (!bulletin) {
+   const [roster, annual, previousNews] = await Promise.all([
+    annualRoster(env, date), annualValues(env, date), previousWeekNews(env.DB, date),
+   ]);
+   return reply({ bulletin: null, annualServants: roster.servants, annualChoirPdfUrl: annual.choir_pdf_url || '', previousNews });
+  }
+
+  const [rows, announcement] = await Promise.all([
+   env.DB.prepare('SELECT title,detail,kind,standing FROM worship_items WHERE bulletin_id=? ORDER BY position').bind(bulletin.id).all(),
+   env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind('weekly-' + date).first(),
+  ]);
+  const extras = (() => {
+   try { return JSON.parse(announcement?.body || '').extras || {}; } catch { return {}; }
+  })();
+  const annual = await annualValues(env, date);
+  const choirOverride = await env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind('choir-score-weekly-' + date).first();
+  const editorRows = (rows.results || []).map(row => ({ name: row.title, value: row.detail, kind: row.kind, standing: !!row.standing }));
+  editorRows.forEach((row, index) => {
+   const slot = rowSlot(row, index, editorRows);
+   if (slot && Object.hasOwn(annual, slot)) row.value = annual[slot];
+  });
+  extras.choirPdfUrl = choirOverride ? choirOverride.body : (annual.choir_pdf_url || extras.choirPdfUrl || '');
+  extras.servants = (await annualRoster(env, date, extras.servants || '')).servants;
+  const news = announcement ? readStoredNews(date, announcement.body) : await previousWeekNews(env.DB, date);
+  return reply({ bulletin: {
+   date: bulletin.sunday_date, time: bulletin.service_time, sermon: bulletin.sermon_title,
+   scripture: bulletin.scripture_reference, preacher: bulletin.preacher, rows: editorRows,
+   news, extras, status: bulletin.status,
+  } });
+ } catch {
+  return fail('database_error', 500);
+ }
+}
 export async function onRequestPut({env,request}){if(!sameOrigin(request))return fail('invalid_origin',403);let data;try{data=await request.json()}catch{return fail('invalid_json')};if(!validDate(data?.date))return fail('invalid_sunday');if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(data.time))return fail('invalid_time');if(!Array.isArray(data.rows)||data.rows.length<1||data.rows.length>60)return fail('invalid_rows');if(data.rows.some(r=>!r||typeof r.name!=='string'||!r.name.trim()||r.name.length>120||typeof r.value!=='string'||r.value.length>500||!['text','hymn','reading','scripture'].includes(r.kind)||typeof r.standing!=='boolean'))return fail('invalid_row');if([data.sermon,data.scripture,data.preacher,data.news].some(v=>typeof v!=='string')||data.sermon.length>500||data.scripture.length>250||data.preacher.length>250||data.news.length>10000)return fail('invalid_fields');const extras=data.extras&&typeof data.extras==='object'?Object.fromEntries(['sendingSong','closingPrayer','servants','intercession','worshipPdfUrl','choirPdfUrl'].map(k=>[k,clean(data.extras[k],6000)])):{ };for(const url of [extras.worshipPdfUrl,extras.choirPdfUrl].filter(Boolean)){const safe=/^\/api\/scores\/google\/[A-Za-z0-9_-]+\.pdf$/.test(url)||/^\/api\/scores\/drive\/[A-Za-z0-9_-]+\.pdf$/.test(url)||/^\/api\/scores\/choir\/[a-zA-Z0-9._-]+\.pdf$/.test(url)||/^\/scores\/[a-zA-Z0-9_./%-]+\.pdf(?:\?[a-zA-Z0-9_=&%-]+)?$/i.test(url)||/^https:\/\/[^\s<>"']+\.pdf(?:\?[^\s<>"']*)?$/i.test(url);if(!safe)return fail('invalid_score_pdf_url');}const date=data.date,id=idFor(date);
  const preview = data.action === 'preview';
  const status = data.action === 'publish' ? 'published' : data.action === 'draft' ? 'draft' : null;

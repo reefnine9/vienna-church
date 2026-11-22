@@ -1,5 +1,38 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 
+const sentenceSegmenter = typeof Intl.Segmenter === 'function'
+  ? new Intl.Segmenter('ko', { granularity: 'sentence' })
+  : null;
+
+function newsSentences(news) {
+  return news.split(/\r\n|\r|\n/).flatMap(line => {
+    const text = line.trim().replace(/^(?:\d+[.)]|[-*•])\s+/, '');
+    if (!text || text.startsWith('|')) return text ? [text] : [];
+    const sentences = sentenceSegmenter
+      ? Array.from(sentenceSegmenter.segment(text), item => item.segment)
+      : text.split(/(?<=[.!?。！？])\s+/);
+    return sentences.map(sentence => sentence.trim()).filter(Boolean);
+  });
+}
+
+function compareNews(before, after) {
+  const key = sentence => sentence.replace(/\s/g, '').replace(/[.!?。！？]+$/, '');
+  const remaining = new Map();
+  for (const sentence of newsSentences(after)) {
+    const normalized = key(sentence);
+    remaining.set(normalized, (remaining.get(normalized) ?? 0) + 1);
+  }
+  const removed = newsSentences(before).filter(sentence => {
+    const normalized = key(sentence);
+    const count = remaining.get(normalized);
+    if (!count) return true;
+    if (count === 1) remaining.delete(normalized);
+    else remaining.set(normalized, count - 1);
+    return false;
+  });
+  return { removed, hasNewText: remaining.size > 0 };
+}
+
 export default function NewsReviewDialog({ review, publishing, onConfirm, onCancel, onRetry }) {
   const dialogRef = useRef(null);
   const cancelRef = useRef(null);
@@ -11,18 +44,25 @@ export default function NewsReviewDialog({ review, publishing, onConfirm, onCanc
     return () => dialog.close();
   }, []);
 
-  const before = review.payload.news.split(/\r\n|\r|\n/);
+  const beforeParts = review.payload.news.split(/(\r\n|\r|\n)/);
   const result = review.result;
   const afterParts = result?.news.split(/(\r\n|\r|\n)/) ?? [];
   const changes = afterParts
     .filter((_, index) => index % 2 === 0)
-    .map((after, index) => ({ index, before: before[index] ?? '', after }))
+    .map((after, index) => ({ index, before: beforeParts[index * 2] ?? '', after }))
     .filter(change => change.before !== change.after);
 
   const setEdit = (index, text) => setEdits(current => ({ ...current, [index]: text }));
   const confirmedNews = changes.length
     ? afterParts.map((part, index) => index % 2 ? part : (edits[index / 2] ?? part)).join('')
     : (edits[0] ?? result?.news ?? '');
+  // Ignore automatic spelling edits when identifying what the editor removed.
+  const editedNews = changes.length
+    ? beforeParts.map((part, index) => index % 2 ? part : (edits[index / 2] ?? part)).join('')
+    : (edits[0] ?? review.payload.news);
+  const newsChanged = !!result && editedNews !== review.originalNews;
+  const comparison = newsChanged ? compareNews(review.originalNews, editedNews) : null;
+  const removed = comparison?.removed ?? [];
 
   return <dialog
     className="admin-news-review"
@@ -44,6 +84,10 @@ export default function NewsReviewDialog({ review, publishing, onConfirm, onCanc
           <p role="status">{review.payload.news.trim() ? '교회 소식의 변경 사항을 확인하고 있습니다.' : '주보를 확인하고 있습니다.'}</p>}
         {result?.newsNeedsReview &&
           <p className="admin-news-review-notice">자동으로 판단하기 어려운 문장이 있습니다. 본문을 확인해 주세요.</p>}
+        {removed.length > 0 && <div className="admin-news-review-removed">
+          <strong>{comparison.hasNewText ? '삭제하거나 바꾼 기존 내용' : '삭제한 내용'}</strong>
+          <ul>{removed.map((sentence, index) => <li key={index}>{sentence}</li>)}</ul>
+        </div>}
         {result && (changes.length ? <ul className="admin-news-review-changes">
           {changes.map(change => <li key={change.index}>
             <div>
@@ -64,7 +108,7 @@ export default function NewsReviewDialog({ review, publishing, onConfirm, onCanc
             </div>
           </li>)}
         </ul> : <div className="admin-news-review-after">
-          <p>교회 소식에서 수정한 부분이 없습니다.</p>
+          {!removed.length && <p>{newsChanged ? '교회 소식에 변경 사항이 있습니다.' : '교회 소식에 변경 사항이 없습니다.'}</p>}
           <label>
             교정 후
             <textarea
