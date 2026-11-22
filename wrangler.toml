@@ -6,3 +6,6 @@ compatibility_date = "2026-11-01"
 binding = "DB"
 database_name = "vienna-church-db"
 database_id = "75eb7eb2-74ef-43c8-b8b2-08e003682086"
+
+[ai]
+binding = "NEWS_AI"
