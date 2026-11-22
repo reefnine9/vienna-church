@@ -41,7 +41,7 @@ export default function NewsReviewDialog({ review, publishing, onConfirm, onCanc
 
       <div className="admin-news-review-content">
         {!result && !review.error &&
-          <p role="status">{review.payload.news.trim() ? '교회 소식을 교정하고 있습니다.' : '주보를 확인하고 있습니다.'}</p>}
+          <p role="status">{review.payload.news.trim() ? '교회 소식의 변경 사항을 확인하고 있습니다.' : '주보를 확인하고 있습니다.'}</p>}
         {result?.newsNeedsReview &&
           <p className="admin-news-review-notice">자동으로 판단하기 어려운 문장이 있습니다. 본문을 확인해 주세요.</p>}
         {result && (changes.length ? <ul className="admin-news-review-changes">

@@ -1,3 +1,6 @@
+import { editPublishedNews } from './news-copy-edits.js';
+import { fillMissingSentencePeriods, proofreadChurchNews } from './news-proofreading.js';
+
 const model = '@cf/google/gemma-4-26b-a4b-it';
 const instructions = [
   '당신은 교회 주보의 한국어 교열자입니다. 국립국어원 한국어 어문 규범을 적용하세요.',
@@ -94,7 +97,7 @@ async function verifyMeaning(ai, edits) {
   return edits.map(() => false);
 }
 
-export async function reviewChurchNews(text, ai) {
+async function reviewChurchNews(text, ai) {
   const pieces = text.split(/(\r\n|\r|\n)/);
   const positions = [];
   for (let i = 0; i < pieces.length; i += 2) {
@@ -134,4 +137,28 @@ export async function reviewChurchNews(text, ai) {
     }
   }
   return { news: pieces.join(''), needsReview };
+}
+
+export async function reviewBulletinNews(date, text, ai, reviewedNews, allowFallback) {
+  // Compare exact lines before making any changes, including rule-based corrections.
+  const reviewedLines = new Set(reviewedNews.flatMap(news => news.split(/\r\n|\r|\n/)));
+  const pieces = text.split(/(\r\n|\r|\n)/);
+  const changedPositions = [];
+  for (let position = 0; position < pieces.length; position += 2) {
+    if (!reviewedLines.has(pieces[position])) changedPositions.push(position);
+  }
+  if (!changedPositions.length) return { news: text, needsReview: false };
+
+  const changedText = changedPositions.map(position => pieces[position]).join('\n');
+  const basicNews = proofreadChurchNews(editPublishedNews(date, changedText));
+  let review;
+  try {
+    review = await reviewChurchNews(basicNews, ai);
+  } catch (error) {
+    if (!allowFallback) throw error;
+    review = { news: basicNews, needsReview: true };
+  }
+  const correctedLines = fillMissingSentencePeriods(review.news).split('\n');
+  changedPositions.forEach((position, index) => { pieces[position] = correctedLines[index]; });
+  return { news: pieces.join(''), needsReview: review.needsReview };
 }
