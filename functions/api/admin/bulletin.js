@@ -1,6 +1,6 @@
 import { reviewChurchNews } from '../../_lib/news-language-review.js';
 import { editPublishedNews } from '../../_lib/news-copy-edits.js';
-import { proofreadChurchNews } from '../../_lib/news-proofreading.js';
+import { fillMissingSentencePeriods, proofreadChurchNews } from '../../_lib/news-proofreading.js';
 import {reply,sameOrigin} from '../../_lib/auth.js';
 const validDate=s=>/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(Date.parse(s+'T12:00:00Z'))&&new Date(s+'T12:00:00Z').toISOString().slice(0,10)===s&&new Date(s+'T12:00:00Z').getUTCDay()===0;
 const clean=(v,max)=>typeof v==='string'?v.trim().slice(0,max):'';
@@ -35,7 +35,7 @@ export async function onRequestPut({env,request}){if(!sameOrigin(request))return
   if (status === 'published') return fail('교회 소식의 문장 교정에 연결하지 못했습니다. 잠시 후 다시 게시해 주세요.', 503);
   review = { news: basicNews, needsReview: true };
  }
- const { news, needsReview } = review;
+ const news = fillMissingSentencePeriods(review.news);
  if (news.length > 10000) return fail('교정한 교회 소식이 10,000자를 넘습니다. 내용을 줄여 주세요.'); 
  const statements=[env.DB.prepare("INSERT INTO bulletins(id,sunday_date,service_time,sermon_title,scripture_reference,preacher,status,published_at) VALUES(?,?,?,?,?,?,?,CASE WHEN ?='published' THEN CURRENT_TIMESTAMP ELSE NULL END) ON CONFLICT(sunday_date) DO UPDATE SET service_time=excluded.service_time,sermon_title=excluded.sermon_title,scripture_reference=excluded.scripture_reference,preacher=excluded.preacher,status=excluded.status,published_at=CASE WHEN excluded.status='published' THEN COALESCE(bulletins.published_at,CURRENT_TIMESTAMP) ELSE NULL END,updated_at=CURRENT_TIMESTAMP").bind(id,date,data.time,data.sermon,data.scripture,data.preacher,status,status),env.DB.prepare('DELETE FROM worship_items WHERE bulletin_id=?').bind(id)];data.rows.forEach((r,i)=>statements.push(env.DB.prepare('INSERT INTO worship_items(id,bulletin_id,position,title,detail,kind,standing) VALUES(?,?,?,?,?,?,?)').bind(id+'-'+i,id,i,clean(r.name,120),clean(r.value,500),r.kind,r.standing?1:0)));statements.push(env.DB.prepare("INSERT INTO announcements(id,title,body,starts_on,ends_on,position,active) VALUES(?,?,?,?,?,0,1) ON CONFLICT(id) DO UPDATE SET body=excluded.body").bind('weekly-'+date,'이번 주 교회 소식',JSON.stringify({news,extras}),date,date));
  // Keep the weekly choir score synchronized with the annual schedule.
@@ -70,4 +70,4 @@ export async function onRequestPut({env,request}){if(!sameOrigin(request))return
   else statements.push(env.DB.prepare("DELETE FROM annual_schedule WHERE sunday_date=? AND slot='custom'").bind(target));
  }
  await env.DB.batch(statements);
- return reply({ok:true,status,date,news,newsNeedsReview:needsReview})}catch{return fail('save_failed',500)}}
+ return reply({ok:true,status,date,news,newsNeedsReview:review.needsReview})}catch{return fail('save_failed',500)}}

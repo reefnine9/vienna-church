@@ -78,3 +78,20 @@ export function proofreadChurchNews(news) {
       .trimEnd();
   });
 }
+
+// Supply missing periods on clear sentence endings even if the language model omitted them.
+const sentenceEnd = /(?:[가-힣](?:니다|시다|시오|세요|[아어해돼줘봐와래게네군]요|겠다|셨다|었다|았다)|이다|한다|된다|있다|없다|같다)(?=[ \t]|$)/g;
+const continuation = /^[ \t]*(?:[.?!…。！？,:;~()\[\]]|(?:라고|라며|라는|하고|하며|하여|하면서|하니|하므로|하자|하면|하지만|보니|보면|보면서|싶어|싶은)(?=[\s.,!?]|$))/;
+const nonProseLine = /^[ \t]*(?:\||#{1,6}(?=[ \t]|$))/;
+
+export function fillMissingSentencePeriods(news) {
+  return news.replace(/[^\r\n]+/g, line => {
+    if (nonProseLine.test(line)) return line;
+    return line.split(protectedText)
+      .map((part, index) => index % 2 ? part : part.replace(sentenceEnd, (ending, offset) => {
+        const rest = part.slice(offset + ending.length);
+        return continuation.test(rest) ? ending : ending + '.';
+      }))
+      .join('');
+  });
+}
