@@ -13,6 +13,17 @@ export function configured(env){return !!(env.ADMIN_PASSWORD&&env.ADMIN_SESSION_
 function cookies(request){const raw=request.headers.get('cookie')||'';return raw.split(';').map(x=>x.trim()).find(x=>x.startsWith(cookieName+'='))?.slice(cookieName.length+1)}
 export async function authenticated(request,env){if(!configured(env))return false;const token=cookies(request);if(!token)return false;const parts=token.split('.');if(parts.length!==2)return false;const [payload,sig]=parts;if(!await validSignature(payload,sig,env.ADMIN_SESSION_SECRET))return false;try{const p=JSON.parse(new TextDecoder().decode(unb64(payload)));return p.v===1&&Number.isFinite(p.exp)&&p.exp>Date.now()/1000&&p.exp<=Date.now()/1000+YEAR&&p.role==='admin'}catch{return false}}
 export async function issue(env){const payload=b64(enc.encode(JSON.stringify({v:1,role:'admin',exp:Math.floor(Date.now()/1000)+YEAR})));return payload+'.'+await sign(payload,env.ADMIN_SESSION_SECRET)}
+const bulletinReviewProof = (request, snapshot) =>
+  JSON.stringify(['bulletin-review', cookies(request), snapshot]);
+
+export function issueBulletinReview(request, env, snapshot) {
+  return sign(bulletinReviewProof(request, snapshot), env.ADMIN_SESSION_SECRET);
+}
+
+export function validBulletinReview(request, env, snapshot, token) {
+  return typeof token === 'string' && validSignature(bulletinReviewProof(request, snapshot), token, env.ADMIN_SESSION_SECRET);
+}
+
 export function sessionCookie(value,maxAge=YEAR){return cookieName+'='+value+'; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age='+maxAge}
 export function sameOrigin(request){try{return new URL(request.headers.get('origin')).origin===new URL(request.url).origin}catch{return false}}
 export async function matchesPassword(input,env){if(typeof input!=='string'||input.length>256)return false;const expected=await sign('password:'+env.ADMIN_PASSWORD,env.ADMIN_SESSION_SECRET);const supplied=await sign('password:'+input,env.ADMIN_SESSION_SECRET);return expected===supplied}

@@ -41,3 +41,46 @@
 .admin-scripture-editor p{margin:0}
 
 .admin-bible-selectors{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}.admin-bible-selectors label{min-width:0}.admin-bible-selectors select{display:block;width:100%;min-width:0;padding:9px 6px;border:1px solid #cbd5e1;border-radius:7px;background:#fff;color:#172033;font:inherit}.admin-scripture-editor textarea{display:block;width:100%;box-sizing:border-box;margin-top:6px;line-height:1.65}@media(max-width:640px){.admin-bible-selectors{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.admin-news-review {
+  width: min(40rem, calc(100% - 2rem));
+  max-height: calc(100% - 2rem);
+  box-sizing: border-box;
+  padding: 0;
+  border: 1px solid #d9e0e8;
+  border-radius: 14px;
+  color: #263343;
+  background: white;
+  box-shadow: 0 16px 56px #172a4533;
+}
+.admin-news-review::backdrop { background: #24364e70; }
+.admin-news-review-layout {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+}
+.admin-news-review-header { display: grid; gap: 5px; padding: 18px 20px 14px; border-bottom: 1px solid #e5eaf0; }
+.admin-news-review-header h2 { margin: 0; font-size: 20px; }
+.admin-news-review-header p { margin: 0; color: #526278; font-size: 14px; }
+.admin-news-review-content { padding: 16px 20px; overflow: auto; overscroll-behavior: contain; }
+.admin-news-review-content > p { margin: 0; }
+.admin-news-review-content .admin-news-review-notice { margin-bottom: 12px; color: #674b16; }
+.admin-news-review-changes { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.admin-news-review-changes li { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.admin-news-review-changes li > div { padding: 10px 12px; border-radius: 8px; background: #f1f4f8; }
+.admin-news-review-changes li > .admin-news-review-after { background: #e9f4ec; }
+.admin-news-review-changes strong { font-size: 13px; }
+.admin-news-review-changes p { margin: 5px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
+.admin-news-review-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid #e5eaf0;
+}
+.admin-news-review-actions button { min-width: 72px; min-height: 44px; }
+.admin-news-review-error { margin: 0; padding: 6px 20px; color: #a31d2e; }
+@media (max-width: 480px) {
+  .admin-news-review-changes li { grid-template-columns: 1fr; }
+}

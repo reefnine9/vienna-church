@@ -1,11 +1,16 @@
 import { reviewChurchNews } from '../../_lib/news-language-review.js';
 import { editPublishedNews } from '../../_lib/news-copy-edits.js';
 import { fillMissingSentencePeriods, proofreadChurchNews } from '../../_lib/news-proofreading.js';
-import {reply,sameOrigin} from '../../_lib/auth.js';
+import { issueBulletinReview, reply, sameOrigin, validBulletinReview } from '../../_lib/auth.js';
 const validDate=s=>/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(Date.parse(s+'T12:00:00Z'))&&new Date(s+'T12:00:00Z').toISOString().slice(0,10)===s&&new Date(s+'T12:00:00Z').getUTCDay()===0;
 const clean=(v,max)=>typeof v==='string'?v.trim().slice(0,max):'';
 const idFor=d=>'bulletin-'+d;
 const fail=(error,status=400)=>reply({error},status);
+const reviewSnapshot = (data, extras, news, needsReview) => [
+ data.date, data.time, data.sermon, data.scripture, data.preacher,
+ data.rows.map(({ name, value, kind, standing }) => [name, value, kind, standing]),
+ extras, news, needsReview,
+];
 const rosterDates=date=>Array.from({length:3},(_,i)=>{const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+7*i);return d.toISOString().slice(0,10)});
 const shortDate=d=>Number(d.slice(5,7))+'/'+Number(d.slice(8,10));
 const annualRowSlots={'경배 찬송':'opening_hymn','교독':'responsive_reading','교독문':'responsive_reading','대표 기도':'prayer_leader','봉헌 찬송':'offertory_hymn'};
@@ -23,20 +28,40 @@ async function annualRoster(env,date,stored=''){
 }
 
 export async function onRequestGet({env,request}){const date=new URL(request.url).searchParams.get('date');if(!validDate(date))return fail('invalid_sunday');try{const b=await env.DB.prepare('SELECT * FROM bulletins WHERE sunday_date=?').bind(date).first();if(!b){const roster=await annualRoster(env,date);const annual=await annualValues(env,date);return reply({bulletin:null,annualServants:roster.servants,annualChoirPdfUrl:annual.choir_pdf_url||''})}const [rows,ann]=await Promise.all([env.DB.prepare('SELECT title,detail,kind,standing FROM worship_items WHERE bulletin_id=? ORDER BY position').bind(b.id).all(),env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind('weekly-'+date).first()]);const extras=(()=>{try{return JSON.parse(ann?.body||'').extras||{}}catch{return {}}})();const annual=await annualValues(env,date);const choirOverride=await env.DB.prepare('SELECT body FROM announcements WHERE id=?').bind('choir-score-weekly-'+date).first();const editorRows=(rows.results||[]).map(r=>({name:r.title,value:r.detail,kind:r.kind,standing:!!r.standing}));editorRows.forEach((r,i)=>{const slot=rowSlot(r,i,editorRows);if(slot&&Object.hasOwn(annual,slot))r.value=annual[slot]});extras.choirPdfUrl=choirOverride?choirOverride.body:(annual.choir_pdf_url||extras.choirPdfUrl||'');extras.servants=(await annualRoster(env,date,extras.servants||'')).servants;return reply({bulletin:{date:b.sunday_date,time:b.service_time,sermon:b.sermon_title,scripture:b.scripture_reference,preacher:b.preacher,rows:editorRows,news:editPublishedNews(date,(()=>{try{const v=JSON.parse(ann?.body||'');return v&&typeof v==='object'?v.news||'':ann?.body||''}catch{return ann?.body||''}})()),extras,status:b.status}})}catch{return fail('database_error',500)}}
-export async function onRequestPut({env,request}){if(!sameOrigin(request))return fail('invalid_origin',403);let data;try{data=await request.json()}catch{return fail('invalid_json')};if(!validDate(data?.date))return fail('invalid_sunday');if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(data.time))return fail('invalid_time');if(!Array.isArray(data.rows)||data.rows.length<1||data.rows.length>60)return fail('invalid_rows');if(data.rows.some(r=>!r||typeof r.name!=='string'||!r.name.trim()||r.name.length>120||typeof r.value!=='string'||r.value.length>500||!['text','hymn','reading','scripture'].includes(r.kind)||typeof r.standing!=='boolean'))return fail('invalid_row');if([data.sermon,data.scripture,data.preacher,data.news].some(v=>typeof v!=='string')||data.sermon.length>500||data.scripture.length>250||data.preacher.length>250||data.news.length>10000)return fail('invalid_fields');const extras=data.extras&&typeof data.extras==='object'?Object.fromEntries(['sendingSong','closingPrayer','servants','intercession','worshipPdfUrl','choirPdfUrl'].map(k=>[k,clean(data.extras[k],6000)])):{ };for(const url of [extras.worshipPdfUrl,extras.choirPdfUrl].filter(Boolean)){const safe=/^\/api\/scores\/google\/[A-Za-z0-9_-]+\.pdf$/.test(url)||/^\/api\/scores\/drive\/[A-Za-z0-9_-]+\.pdf$/.test(url)||/^\/api\/scores\/choir\/[a-zA-Z0-9._-]+\.pdf$/.test(url)||/^\/scores\/[a-zA-Z0-9_./%-]+\.pdf(?:\?[a-zA-Z0-9_=&%-]+)?$/i.test(url)||/^https:\/\/[^\s<>"']+\.pdf(?:\?[^\s<>"']*)?$/i.test(url);if(!safe)return fail('invalid_score_pdf_url');}const date=data.date,id=idFor(date),status=data.action==='publish'?'published':data.action==='draft'?'draft':null;if(!status)return fail('invalid_action');
- try{
- const existing = await env.DB.prepare('SELECT status FROM bulletins WHERE sunday_date=?').bind(date).first();
- if(existing?.status==='published'&&status==='draft')return fail('published_cannot_be_draft',409);
- const basicNews = proofreadChurchNews(editPublishedNews(date, data.news));
- let review;
+export async function onRequestPut({env,request}){if(!sameOrigin(request))return fail('invalid_origin',403);let data;try{data=await request.json()}catch{return fail('invalid_json')};if(!validDate(data?.date))return fail('invalid_sunday');if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(data.time))return fail('invalid_time');if(!Array.isArray(data.rows)||data.rows.length<1||data.rows.length>60)return fail('invalid_rows');if(data.rows.some(r=>!r||typeof r.name!=='string'||!r.name.trim()||r.name.length>120||typeof r.value!=='string'||r.value.length>500||!['text','hymn','reading','scripture'].includes(r.kind)||typeof r.standing!=='boolean'))return fail('invalid_row');if([data.sermon,data.scripture,data.preacher,data.news].some(v=>typeof v!=='string')||data.sermon.length>500||data.scripture.length>250||data.preacher.length>250||data.news.length>10000)return fail('invalid_fields');const extras=data.extras&&typeof data.extras==='object'?Object.fromEntries(['sendingSong','closingPrayer','servants','intercession','worshipPdfUrl','choirPdfUrl'].map(k=>[k,clean(data.extras[k],6000)])):{ };for(const url of [extras.worshipPdfUrl,extras.choirPdfUrl].filter(Boolean)){const safe=/^\/api\/scores\/google\/[A-Za-z0-9_-]+\.pdf$/.test(url)||/^\/api\/scores\/drive\/[A-Za-z0-9_-]+\.pdf$/.test(url)||/^\/api\/scores\/choir\/[a-zA-Z0-9._-]+\.pdf$/.test(url)||/^\/scores\/[a-zA-Z0-9_./%-]+\.pdf(?:\?[a-zA-Z0-9_=&%-]+)?$/i.test(url)||/^https:\/\/[^\s<>"']+\.pdf(?:\?[^\s<>"']*)?$/i.test(url);if(!safe)return fail('invalid_score_pdf_url');}const date=data.date,id=idFor(date);
+ const preview = data.action === 'preview';
+ const status = data.action === 'publish' ? 'published' : data.action === 'draft' ? 'draft' : null;
+ if (!preview && !status) return fail('invalid_action');
  try {
-  review = await reviewChurchNews(basicNews, env.NEWS_AI);
- } catch {
-  if (status === 'published') return fail('교회 소식의 문장 교정에 연결하지 못했습니다. 잠시 후 다시 게시해 주세요.', 503);
-  review = { news: basicNews, needsReview: true };
+ let news = data.news;
+ let needsReview = data.newsNeedsReview === true;
+ if (status === 'published') {
+  const snapshot = reviewSnapshot(data, extras, news, needsReview);
+  if (!await validBulletinReview(request, env, snapshot, data.reviewToken)) {
+   return fail('게시 전에 교회 소식의 교정 내용을 다시 확인해 주세요.', 409);
+  }
+ } else {
+  if (!preview) {
+   const existing = await env.DB.prepare('SELECT status FROM bulletins WHERE sunday_date=?').bind(date).first();
+   if (existing?.status === 'published') return fail('published_cannot_be_draft',409);
+  }
+  const basicNews = proofreadChurchNews(editPublishedNews(date, data.news));
+  let review;
+  try {
+   review = await reviewChurchNews(basicNews, env.NEWS_AI);
+  } catch {
+   if (preview) return fail('교회 소식의 문장 교정에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.', 503);
+   review = { news: basicNews, needsReview: true };
+  }
+  news = fillMissingSentencePeriods(review.news);
+  needsReview = review.needsReview;
+  if (news.length > 10000) return fail('교정한 교회 소식이 10,000자를 넘습니다. 내용을 줄여 주세요.');
+  if (preview) {
+   const snapshot = reviewSnapshot(data, extras, news, needsReview);
+   const reviewToken = await issueBulletinReview(request, env, snapshot);
+   return reply({ ok: true, news, newsNeedsReview: needsReview, reviewToken });
+  }
  }
- const news = fillMissingSentencePeriods(review.news);
- if (news.length > 10000) return fail('교정한 교회 소식이 10,000자를 넘습니다. 내용을 줄여 주세요.'); 
  const statements=[env.DB.prepare("INSERT INTO bulletins(id,sunday_date,service_time,sermon_title,scripture_reference,preacher,status,published_at) VALUES(?,?,?,?,?,?,?,CASE WHEN ?='published' THEN CURRENT_TIMESTAMP ELSE NULL END) ON CONFLICT(sunday_date) DO UPDATE SET service_time=excluded.service_time,sermon_title=excluded.sermon_title,scripture_reference=excluded.scripture_reference,preacher=excluded.preacher,status=excluded.status,published_at=CASE WHEN excluded.status='published' THEN COALESCE(bulletins.published_at,CURRENT_TIMESTAMP) ELSE NULL END,updated_at=CURRENT_TIMESTAMP").bind(id,date,data.time,data.sermon,data.scripture,data.preacher,status,status),env.DB.prepare('DELETE FROM worship_items WHERE bulletin_id=?').bind(id)];data.rows.forEach((r,i)=>statements.push(env.DB.prepare('INSERT INTO worship_items(id,bulletin_id,position,title,detail,kind,standing) VALUES(?,?,?,?,?,?,?)').bind(id+'-'+i,id,i,clean(r.name,120),clean(r.value,500),r.kind,r.standing?1:0)));statements.push(env.DB.prepare("INSERT INTO announcements(id,title,body,starts_on,ends_on,position,active) VALUES(?,?,?,?,?,0,1) ON CONFLICT(id) DO UPDATE SET body=excluded.body").bind('weekly-'+date,'이번 주 교회 소식',JSON.stringify({news,extras}),date,date));
  // Keep the weekly choir score synchronized with the annual schedule.
  statements.push(env.DB.prepare("INSERT INTO announcements(id,title,body,starts_on,ends_on,position,active) VALUES(?,?,?, ?,?,0,0) ON CONFLICT(id) DO UPDATE SET body=excluded.body").bind('choir-score-weekly-'+date,'찬양대 악보 PDF',extras.choirPdfUrl,date,date));
@@ -70,4 +95,4 @@ export async function onRequestPut({env,request}){if(!sameOrigin(request))return
   else statements.push(env.DB.prepare("DELETE FROM annual_schedule WHERE sunday_date=? AND slot='custom'").bind(target));
  }
  await env.DB.batch(statements);
- return reply({ok:true,status,date,news,newsNeedsReview:review.needsReview})}catch{return fail('save_failed',500)}}
+ return reply({ok:true,status,date,news,newsNeedsReview:needsReview})}catch{return fail('save_failed',500)}}
