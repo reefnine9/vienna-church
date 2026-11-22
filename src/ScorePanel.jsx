@@ -25,7 +25,7 @@ function fallbackLink(url, fileName, loadFailed) {
     : { href: source.href, target: '_blank', label: 'PDF 파일 열기' };
 }
 
-export default function ScorePanel({ url, title, onExpand, onClose }) {
+export default function ScorePanel({ url, title, source, onExpand, onClose }) {
   const fileName = `${title} 악보.pdf`;
   const [pdf, setPdf] = useState();
   const [file, setFile] = useState(null);
@@ -70,6 +70,6 @@ export default function ScorePanel({ url, title, onExpand, onClose }) {
       </div>
       <button type="button" className="praise-score-close" onClick={onClose} aria-label="악보 접기">닫기 <X size={15}/></button>
     </div>
-    <PdfScore url={url} title={title} onDocumentLoad={setPdf}/>
+    <PdfScore url={url} title={title} source={source} onDocumentLoad={setPdf}/>
   </div>;
 }
