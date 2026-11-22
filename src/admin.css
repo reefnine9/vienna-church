@@ -70,6 +70,8 @@
 .admin-news-review-changes li { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .admin-news-review-changes li > div { padding: 10px 12px; border-radius: 8px; background: #f1f4f8; }
 .admin-news-review-changes li > .admin-news-review-after { background: #e9f4ec; }
+.admin-news-review-after > p { margin: 0 0 12px; }
+.admin-news-review-after textarea { border-color: #abc6b2; line-height: 1.5; }
 .admin-news-review-changes strong { font-size: 13px; }
 .admin-news-review-changes p { margin: 5px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
 .admin-news-review-actions {

@@ -1,4 +1,4 @@
-import { editPublishedNews } from './news-copy-edits.js';
+import { editPublishedNews, storedNewsText } from './news-copy-edits.js';
 import { bulletinReadError } from './temporary-bulletin.js';
 import { likeDayRange, likeDayTotal, withLikesSchema } from './likes.js';
 
@@ -54,14 +54,17 @@ function formatBulletin(row) {
   const { items_json, news_json, schedule_json, lunch_json, choir_override, ...bulletin } = row;
   const items = JSON.parse(items_json || '[]');
   const news = JSON.parse(news_json || '[]').map(announcement => {
-    let newsItem = announcement;
     try {
       const data = JSON.parse(announcement.body);
       if (data && typeof data === 'object') {
-        newsItem = { ...announcement, body: data.news || '', extras: data.extras || {} };
+        return {
+          ...announcement,
+          body: storedNewsText(bulletin.sunday_date, data),
+          extras: data.extras || {},
+        };
       }
     } catch {}
-    return { ...newsItem, body: editPublishedNews(bulletin.sunday_date, newsItem.body) };
+    return { ...announcement, body: editPublishedNews(bulletin.sunday_date, announcement.body) };
   });
   const schedule = JSON.parse(schedule_json || '[]');
   const dates = [0, 7, 14].map(offset => {

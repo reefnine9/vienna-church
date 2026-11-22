@@ -33,7 +33,9 @@ function completeSave(payload, result) {
   setDraft(current => current.date === payload.date && current.news === payload.news
    ? { ...current, news: result.news }
    : current);
-  savedMessage += ' 교회 소식의 문장을 교정했습니다.';
+  savedMessage += result.status === 'published'
+   ? ' 검토한 교회 소식을 반영했습니다.'
+   : ' 교회 소식의 문장을 교정했습니다.';
  }
  if (result.newsNeedsReview) savedMessage += ' 자동으로 교정하기 어려운 문장이 있습니다. 교회 소식 본문을 확인해 주세요.';
  setMessage(savedMessage);
@@ -68,7 +70,7 @@ async function save(action) {
  }
 }
 
-async function confirmPublication() {
+async function confirmPublication(confirmedNews) {
  if (!publishReview || saving) return;
  const { payload, result } = publishReview;
  setSaving(true);
@@ -78,6 +80,7 @@ async function confirmPublication() {
    ...payload,
    action: 'publish',
    news: result.news,
+   confirmedNews,
    newsNeedsReview: result.newsNeedsReview,
    reviewToken: result.reviewToken,
   });

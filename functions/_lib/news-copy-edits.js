@@ -30,3 +30,17 @@ export function editPublishedNews(date, text) {
   if (date !== '2026-11-22' || typeof text !== 'string') return text;
   return text.split('\n').map(line => november22Edits.get(line.trim()) ?? line).join('\n');
 }
+
+// Apply the archive correction only to entries saved before manual confirmation.
+export function storedNewsText(date, data) {
+  const text = data.news || '';
+  return data.newsConfirmed ? text : editPublishedNews(date, text);
+}
+
+export function readStoredNews(date, body) {
+  try {
+    const data = JSON.parse(body);
+    if (data && typeof data === 'object') return storedNewsText(date, data);
+  } catch {}
+  return editPublishedNews(date, body);
+}
