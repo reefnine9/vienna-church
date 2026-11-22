@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 
-export default function NewsReviewDialog({ review, publishing, onConfirm, onCancel }) {
+export default function NewsReviewDialog({ review, publishing, onConfirm, onCancel, onRetry }) {
   const dialogRef = useRef(null);
   const cancelRef = useRef(null);
   const [edits, setEdits] = useState({});
-  useEffect(() => {
+  useLayoutEffect(() => {
     const dialog = dialogRef.current;
     cancelRef.current.autofocus = true;
     dialog.showModal();
@@ -12,7 +12,8 @@ export default function NewsReviewDialog({ review, publishing, onConfirm, onCanc
   }, []);
 
   const before = review.payload.news.split(/\r\n|\r|\n/);
-  const afterParts = review.result.news.split(/(\r\n|\r|\n)/);
+  const result = review.result;
+  const afterParts = result?.news.split(/(\r\n|\r|\n)/) ?? [];
   const changes = afterParts
     .filter((_, index) => index % 2 === 0)
     .map((after, index) => ({ index, before: before[index] ?? '', after }))
@@ -21,7 +22,7 @@ export default function NewsReviewDialog({ review, publishing, onConfirm, onCanc
   const setEdit = (index, text) => setEdits(current => ({ ...current, [index]: text }));
   const confirmedNews = changes.length
     ? afterParts.map((part, index) => index % 2 ? part : (edits[index / 2] ?? part)).join('')
-    : (edits[0] ?? review.result.news);
+    : (edits[0] ?? result?.news ?? '');
 
   return <dialog
     className="admin-news-review"
@@ -39,9 +40,11 @@ export default function NewsReviewDialog({ review, publishing, onConfirm, onCanc
       </header>
 
       <div className="admin-news-review-content">
-        {review.result.newsNeedsReview &&
+        {!result && !review.error &&
+          <p role="status">{review.payload.news.trim() ? '교회 소식을 교정하고 있습니다.' : '주보를 확인하고 있습니다.'}</p>}
+        {result?.newsNeedsReview &&
           <p className="admin-news-review-notice">자동으로 판단하기 어려운 문장이 있습니다. 본문을 확인해 주세요.</p>}
-        {changes.length ? <ul className="admin-news-review-changes">
+        {result && (changes.length ? <ul className="admin-news-review-changes">
           {changes.map(change => <li key={change.index}>
             <div>
               <strong>교정 전</strong>
@@ -71,15 +74,17 @@ export default function NewsReviewDialog({ review, publishing, onConfirm, onCanc
               disabled={publishing}
             />
           </label>
-        </div>}
+        </div>)}
       </div>
 
       {review.error && <p className="admin-news-review-error" role="alert">{review.error}</p>}
       <footer className="admin-news-review-actions">
         <button type="button" className="admin-reset" ref={cancelRef} onClick={onCancel} disabled={publishing}>취소</button>
-        <button type="button" className="admin-save" onClick={() => onConfirm(confirmedNews)} disabled={publishing}>
-          {publishing ? '게시 중…' : '확인'}
-        </button>
+        {!result && review.error ?
+          <button type="button" className="admin-save" onClick={onRetry}>다시 시도</button> :
+          <button type="button" className="admin-save" onClick={() => onConfirm(confirmedNews)} disabled={publishing || !result}>
+            {publishing ? '게시 중…' : '확인'}
+          </button>}
       </footer>
     </div>
   </dialog>;
