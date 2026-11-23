@@ -67,6 +67,16 @@
 .admin-news-review-content > p { margin: 0; }
 .admin-news-review-content .admin-news-review-notice { margin-bottom: 12px; color: #674b16; }
 .admin-news-review-content .admin-news-review-summary { margin-bottom: 12px; }
+.admin-news-review-events { display: grid; gap: 8px; margin: 0 0 14px; }
+.admin-news-review-event { padding: 10px 12px; border: 1px solid #e5eaf0; border-radius: 8px; background: #f7f9fc; }
+.admin-news-review-event-label { display: block; color: #3d5878; font-size: 13px; margin-bottom: 6px; }
+.admin-news-review-event p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.55; }
+.admin-news-review-event textarea { display: block; box-sizing: border-box; width: 100%; min-height: 58px; padding: 8px 10px; border: 1px solid #d9e0e8; border-radius: 6px; background: #fff; color: #263343; font: inherit; font-size: 14px; line-height: 1.5; resize: vertical; }
+.admin-news-review-edit-all { display: block; margin-top: 12px; padding: 4px 0; border: 0; background: transparent; color: #315e85; font-size: 13px; text-decoration: underline; cursor: pointer; }
+.admin-news-review-fallback { margin-top: 12px; }
+.admin-news-review-fallback label { display: grid; gap: 7px; font-size: 13px; font-weight: 600; }
+.admin-news-review-fallback textarea { box-sizing: border-box; width: 100%; min-height: 130px; padding: 10px; border: 1px solid #abc6b2; border-radius: 7px; color: #263343; font: inherit; line-height: 1.5; resize: vertical; }
+.admin-news-review-fallback > p { margin: 0 0 10px; }
 .admin-news-review-changes { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
 .admin-news-review-changes li { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .admin-news-review-changes li > div { padding: 10px 12px; border-radius: 8px; background: #f1f4f8; }
