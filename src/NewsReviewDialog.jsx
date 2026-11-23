@@ -143,7 +143,7 @@ export default function NewsReviewDialog({ review, publishing, onConfirm, onCanc
               <p>{item.text}</p>
             </div>)}
             {diff.added.map(item => <div className="admin-news-review-event" key={'added-' + item.index}>
-              <strong className="admin-news-review-event-label">추가됨</strong>
+              <strong className="admin-news-review-event-label">{aligned && typedSentences[item.index].text !== finalizedSentences[item.index].text ? '교정 후 추가됨' : '추가됨'}</strong>
               {aligned ? <textarea
                 aria-label={'추가된 문장 ' + (item.index + 1)}
                 rows={2}
