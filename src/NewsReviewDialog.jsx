@@ -139,7 +139,7 @@ export default function NewsReviewDialog({ review, publishing, onConfirm, onCanc
         {result && (diff.added.length > 0 || diff.removed.length > 0) &&
           <div className="admin-news-review-events">
             {diff.removed.map((item, index) => <div className="admin-news-review-event" key={'removed-' + index}>
-              <strong className="admin-news-review-event-label">삭제되었습니다.</strong>
+              <strong className="admin-news-review-event-label">삭제됨</strong>
               <p>{item.text}</p>
             </div>)}
             {diff.added.map(item => <div className="admin-news-review-event" key={'added-' + item.index}>
