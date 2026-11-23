@@ -66,13 +66,11 @@
 .admin-news-review-content { padding: 16px 20px; overflow: auto; overscroll-behavior: contain; }
 .admin-news-review-content > p { margin: 0; }
 .admin-news-review-content .admin-news-review-notice { margin-bottom: 12px; color: #674b16; }
-.admin-news-review-removed { margin: 0 0 12px; padding: 10px 12px; border-radius: 8px; background: #fff1ed; color: #772c22; overflow-wrap: anywhere; }
-.admin-news-review-removed ul { margin: 6px 0 0; padding-inline-start: 20px; }
+.admin-news-review-content .admin-news-review-summary { margin-bottom: 12px; }
 .admin-news-review-changes { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
 .admin-news-review-changes li { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .admin-news-review-changes li > div { padding: 10px 12px; border-radius: 8px; background: #f1f4f8; }
 .admin-news-review-changes li > .admin-news-review-after { background: #e9f4ec; }
-.admin-news-review-after > p { margin: 0 0 12px; }
 .admin-news-review-after textarea { border-color: #abc6b2; line-height: 1.5; }
 .admin-news-review-changes strong { font-size: 13px; }
 .admin-news-review-changes p { margin: 5px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
