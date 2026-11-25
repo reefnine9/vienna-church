@@ -1,0 +1,475 @@
+{
+  "schemaVersion": 1,
+  "sourceSpreadsheet": "1Nvih2TN09hce3e7yJYYUvLY1g9spi27-iSlZalUR8GY",
+  "notes": "2026-11-29..2027-05-23: sourced from verified liturgical spreadsheet; later Sundays: additional editorial suggestions. Previous-year readings are marked unverified unless supported by a bulletin.",
+  "entries": [
+    {
+      "date": "2026-11-29",
+      "number": 115,
+      "festival": "대림절 제1주",
+      "previousDate": "2025-11-30",
+      "previousReading": "미확인",
+      "previousLink": "https://drive.google.com/file/d/1dN1kbTo24grS9tbTfQJ10wzIq2sOchTx/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2026-12-06",
+      "number": 116,
+      "festival": "대림절 제2주",
+      "previousDate": "2025-12-07",
+      "previousReading": "116번 구주 강림(2)",
+      "previousLink": "https://drive.google.com/file/d/1OOBWU2HFaqnIE7gSQU-bLzczKsLQ15-r/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2026-12-13",
+      "number": 117,
+      "festival": "대림절 제3주 · 성서주일",
+      "previousDate": "2025-12-14",
+      "previousReading": "117번 구주 강림(3)",
+      "previousLink": "https://drive.google.com/file/d/1iM9LbxOLvHgQrEzZgUBp9P50SPljEpLF/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2026-12-20",
+      "number": 118,
+      "festival": "대림절 제4주",
+      "previousDate": "2025-12-21",
+      "previousReading": "118번 구주 강림(4)",
+      "previousLink": "https://drive.google.com/file/d/1iF5jygKMfkmJNVLxWnmrBK_21pEvBIAL/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2026-12-27",
+      "number": 64,
+      "festival": "성탄 후 제1주 · 송년주일",
+      "previousDate": "2025-12-28",
+      "previousReading": "119번 성탄절(1)",
+      "previousLink": "https://drive.google.com/file/d/1obSTXotyvxNuEaR4fUop8R526Ada1XHa/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-01-03",
+      "number": 94,
+      "festival": "성탄 후 제2주 · 신년주일",
+      "previousDate": "2026-01-04",
+      "previousReading": "12번 시편 19편",
+      "previousLink": "https://drive.google.com/file/d/1B3FU1fJhV4oiPHBRm6QNRyFYlhSAtdTP/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-01-10",
+      "number": 17,
+      "festival": "주현 후 제1주 · 주님의 세례주일",
+      "previousDate": "2026-01-11",
+      "previousReading": "108번 임직식(2)",
+      "previousLink": "https://drive.google.com/file/d/18CRr2TehrzHTX28u-DHL4JQEG3eaSxVA/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-01-17",
+      "number": 60,
+      "festival": "주현 후 제2주",
+      "previousDate": "2026-01-18",
+      "previousReading": "121번 주현절(1)",
+      "previousLink": "https://drive.google.com/file/d/12R-1XmG1k0OMoO6DFfTnvN1DZsiwhVLh/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-01-24",
+      "number": 122,
+      "festival": "주현 후 제3주",
+      "previousDate": "2026-01-25",
+      "previousReading": "122번 주현절(2)",
+      "previousLink": "https://drive.google.com/file/d/11R_sWS5bN7tZsGZqeFpluI8TLk8yFnVK/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-01-31",
+      "number": 123,
+      "festival": "주현 후 제4주",
+      "previousDate": "2026-02-01",
+      "previousReading": "123번 주현절(3)",
+      "previousLink": "https://drive.google.com/file/d/1o_BU1IkJHrK_M7kbgrc66D5rTopTjTy-/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-02-07",
+      "number": 26,
+      "festival": "변화주일 · 주현 후 마지막 주일",
+      "previousDate": "2026-02-15",
+      "previousReading": "36번 시편 90편",
+      "previousLink": "https://drive.google.com/file/d/1sYoZvYodlruvWHdfTmyT2JpKKazFdyMy/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-02-14",
+      "number": 124,
+      "festival": "사순절 제1주",
+      "previousDate": "2026-02-22",
+      "previousReading": "124번 사순절(1)",
+      "previousLink": "https://drive.google.com/file/d/1wTnzt5PzJL-g0WE5099m8VCNhZkf0ntN/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-02-21",
+      "number": 125,
+      "festival": "사순절 제2주",
+      "previousDate": "2026-03-01",
+      "previousReading": "125번 사순절(2)",
+      "previousLink": "https://drive.google.com/file/d/1V79qtnc90iGPVSjSZTX1h-GOxdXn-oHc/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-02-28",
+      "number": 126,
+      "festival": "사순절 제3주",
+      "previousDate": "2026-03-08",
+      "previousReading": "126번 사순절(3)",
+      "previousLink": "https://drive.google.com/file/d/1iGA8z0nJ0evMln-MOv01NwyJy1asu4C5/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-03-07",
+      "number": 127,
+      "festival": "사순절 제4주",
+      "previousDate": "2026-03-15",
+      "previousReading": "127번 사순절(4)",
+      "previousLink": "https://drive.google.com/file/d/10QxSx6vqSn1Otlh5u7u3X5UDGKUyls-a/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-03-14",
+      "number": 128,
+      "festival": "사순절 제5주",
+      "previousDate": "2026-03-22",
+      "previousReading": "128번 사순절(5)",
+      "previousLink": "https://drive.google.com/file/d/1OP8U39es1pJ-AUetcP7v2oLNJO-vMBGI/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-03-21",
+      "number": 129,
+      "festival": "종려주일 · 고난주일",
+      "previousDate": "2026-03-29",
+      "previousReading": "129번 종려주일",
+      "previousLink": "https://drive.google.com/file/d/1zLNsUrQorCl2TeeHAdgE__SxNzDCypd7/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-03-28",
+      "number": 133,
+      "festival": "부활주일",
+      "previousDate": "2026-04-05",
+      "previousReading": "133번 부활절(1)",
+      "previousLink": "https://drive.google.com/file/d/1nnfRIc-_oRWGO5ZUo9dtLL4q4O-C6ypz/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-04-04",
+      "number": 134,
+      "festival": "부활절 제2주",
+      "previousDate": "2026-04-12",
+      "previousReading": "134번 부활절(2)",
+      "previousLink": "https://drive.google.com/file/d/1i2s_Bs7nTSzTKKRwtMoI7lrTn4klqaJC/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-04-11",
+      "number": 3,
+      "festival": "부활절 제3주",
+      "previousDate": "2026-04-19",
+      "previousReading": "82번 빌립보서 2장",
+      "previousLink": "https://drive.google.com/file/d/1RuNVPBJVXC3AzpEUuRKMDlXFfcy9uoHN/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-04-18",
+      "number": 13,
+      "festival": "부활절 제4주",
+      "previousDate": "2026-04-26",
+      "previousReading": "45번 시편 103편",
+      "previousLink": "https://drive.google.com/file/d/1UziHHWQT7pOPLp56QjtZTiCypw6D2yb-/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-04-25",
+      "number": 79,
+      "festival": "부활절 제5주",
+      "previousDate": "2026-05-03",
+      "previousReading": "96번 어린이주일",
+      "previousLink": "https://drive.google.com/file/d/1ShVtPJVkogPsvNYqPz4thnqMllehibVB/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-05-02",
+      "number": 96,
+      "festival": "부활절 제6주 · 어린이주일",
+      "previousDate": "2026-05-03",
+      "previousReading": "96번 어린이주일",
+      "previousLink": "https://drive.google.com/file/d/1ShVtPJVkogPsvNYqPz4thnqMllehibVB/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-05-09",
+      "number": 98,
+      "festival": "부활절 제7주 · 어버이주일",
+      "previousDate": "2026-05-10",
+      "previousReading": "98번 어버이주일",
+      "previousLink": "https://drive.google.com/file/d/1sgSKgeEtazH1CPbdOX64rdyhM-x6vQ9n/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-05-16",
+      "number": 135,
+      "festival": "성령강림주일 · 청년주일",
+      "previousDate": "2026-05-24",
+      "previousReading": "미확인",
+      "previousLink": "https://drive.google.com/file/d/1c4e7T0Neo4xQf0J0FR0zgWQitt2VlF4O/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-05-23",
+      "number": 137,
+      "festival": "삼위일체주일 · 웨슬리 회심 기념주일",
+      "previousDate": "2026-05-31",
+      "previousReading": "77번 요한복음 3장",
+      "previousLink": "https://drive.google.com/file/d/1NABlpWuCdLCTTHGVRgRQ5y57W-Rik9v1/view?usp=drivesdk",
+      "origin": "sheet"
+    },
+    {
+      "date": "2027-05-30",
+      "number": 113,
+      "festival": "성령강림 후 제2주",
+      "previousDate": "2026-06-07",
+      "previousReading": "56번 시편 128 편",
+      "previousLink": "https://drive.google.com/file/d/1wQO-FXSj04EVQSz4LmfyVyPujJDIrKKo/view",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-06-06",
+      "number": 9,
+      "festival": "성령강림 후 제3주 · 환경선교주일",
+      "previousDate": "2026-06-14",
+      "previousReading": "83번 빌립보서 4 장",
+      "previousLink": "https://drive.google.com/file/d/1LpFTpsnbzM2DokaO6y9GNCJurxmQT63Y/view",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-06-13",
+      "number": 58,
+      "festival": "성령강림 후 제4주",
+      "previousDate": "2026-06-21",
+      "previousReading": "75번 마태복음 6 장",
+      "previousLink": "https://drive.google.com/file/d/1ow46PswkmEBH0xJzlg1ycY423tfy1uh9/view",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-06-20",
+      "number": 60,
+      "festival": "성령강림 후 제5주",
+      "previousDate": "2026-06-28",
+      "previousReading": "15번 시편 27 편",
+      "previousLink": "https://drive.google.com/file/d/1634PZ9PyI-LLSOTWHBn30quV9WQ3uws8/view",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-06-27",
+      "number": 29,
+      "festival": "성령강림 후 제6주",
+      "previousDate": "2026-07-05",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-07-04",
+      "number": 105,
+      "festival": "성령강림 후 제7주 · 맥추감사주일",
+      "previousDate": "2026-07-12",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-07-11",
+      "number": 53,
+      "festival": "성령강림 후 제8주",
+      "previousDate": "2026-07-19",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-07-18",
+      "number": 70,
+      "festival": "성령강림 후 제9주",
+      "previousDate": "2026-07-26",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-07-25",
+      "number": 114,
+      "festival": "성령강림 후 제10주",
+      "previousDate": "2026-08-02",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-08-01",
+      "number": 100,
+      "festival": "성령강림 후 제11주",
+      "previousDate": "2026-08-09",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-08-08",
+      "number": 101,
+      "festival": "성령강림 후 제12주",
+      "previousDate": "2026-08-16",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-08-15",
+      "number": 24,
+      "festival": "성령강림 후 제13주 · 광복기념주일",
+      "previousDate": "2026-08-23",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-08-22",
+      "number": 47,
+      "festival": "성령강림 후 제14주",
+      "previousDate": "2026-08-30",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-08-29",
+      "number": 46,
+      "festival": "성령강림 후 제15주",
+      "previousDate": "2026-09-06",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-09-05",
+      "number": 71,
+      "festival": "성령강림 후 제16주",
+      "previousDate": "2026-09-13",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-09-12",
+      "number": 48,
+      "festival": "성령강림 후 제17주",
+      "previousDate": "2026-09-20",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-09-19",
+      "number": 49,
+      "festival": "성령강림 후 제18주",
+      "previousDate": "2026-09-27",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-09-26",
+      "number": 51,
+      "festival": "성령강림 후 제19주",
+      "previousDate": "2026-10-04",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-10-03",
+      "number": 59,
+      "festival": "성령강림 후 제20주",
+      "previousDate": "2026-10-11",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-10-10",
+      "number": 82,
+      "festival": "성령강림 후 제21주",
+      "previousDate": "2026-10-18",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-10-17",
+      "number": 85,
+      "festival": "성령강림 후 제22주",
+      "previousDate": "2026-10-25",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-10-24",
+      "number": 104,
+      "festival": "성령강림 후 제23주",
+      "previousDate": "2026-11-01",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-10-31",
+      "number": 112,
+      "festival": "종교개혁주일",
+      "previousDate": "2026-11-01",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-11-07",
+      "number": 55,
+      "festival": "성령강림 후 제25주",
+      "previousDate": "2026-11-15",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-11-14",
+      "number": 105,
+      "festival": "추수감사주일",
+      "previousDate": "2026-11-15",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    },
+    {
+      "date": "2027-11-21",
+      "number": 44,
+      "festival": "왕국주일 · 왕이신 그리스도 주일",
+      "previousDate": "2026-11-22",
+      "previousReading": "미확인",
+      "previousLink": "",
+      "origin": "additional-recommendation"
+    }
+  ]
+}
