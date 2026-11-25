@@ -126,3 +126,29 @@
   .admin-reading-buttons { display:grid; }
   .admin-reading-buttons button { width:100%; }
 }
+
+
+/* Compact responsive-reading body with one-year Sunday management table. */
+.admin-reading-simple-controls { display:flex; gap:14px; align-items:end; margin:10px 0 16px; flex-wrap:wrap; }
+.admin-reading-simple-controls label { width:138px; }
+.admin-reading-simple-controls input { box-sizing:border-box; }
+.admin-reading-simple-controls strong { font-size:16px; padding-bottom:10px; }
+.admin-reading-simple-preview { padding:12px 14px; border:1px solid #e6ebf0; border-radius:9px; background:#fff; }
+.admin-reading-simple-preview p { margin:5px 0; line-height:1.65; font-size:15px; overflow-wrap:anywhere; }
+.admin-reading-calendar-title { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:30px; }
+.admin-reading-calendar-title h2 { margin:0; }
+.admin-reading-calendar-title span { font-size:12px; color:#697a8c; }
+.admin-reading-calendar-scroll { width:100%; overflow:auto; max-height:68vh; border:1px solid #e2e8ef; border-radius:9px; margin-top:14px; }
+.admin-reading-calendar-table { width:100%; min-width:850px; border-collapse:separate; border-spacing:0; font-size:13px; }
+.admin-reading-calendar-table th, .admin-reading-calendar-table td { text-align:left; vertical-align:middle; padding:8px 10px; border-bottom:1px solid #e7ecf2; }
+.admin-reading-calendar-table th { position:sticky; top:0; z-index:2; background:#f0f4f9; color:#3b506a; white-space:nowrap; font-weight:700; }
+.admin-reading-calendar-table tr:nth-child(even) td { background:#f9fbfd; }
+.admin-reading-calendar-table td:first-child { white-space:nowrap; }
+.admin-reading-calendar-table td:nth-child(3) { min-width:165px; }
+.admin-reading-calendar-table td:nth-child(5) { min-width:160px; }
+.admin-reading-date-link { border:0; padding:4px 0; background:transparent; color:#315e85; font:inherit; font-weight:700; text-decoration:underline; cursor:pointer; }
+.admin-reading-calendar-cell { display:grid; grid-template-columns:65px minmax(0,1fr); gap:8px; align-items:center; }
+.admin-reading-calendar-cell input { width:65px; min-width:65px; box-sizing:border-box; padding:7px 4px; border:1px solid #cbd6e2; border-radius:6px; font-size:13px; text-align:center; }
+.admin-reading-calendar-cell small { color:#5f7185; min-width:85px; line-height:1.4; font-size:11px; }
+.admin-reading-calendar-table a { color:#315e85; text-decoration:underline; }
+.admin-reading-calendar-status { margin:12px 0 0; color:#315477; font-size:13px; min-height:19px; }
