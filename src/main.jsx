@@ -19,7 +19,7 @@ function ResponsiveReading({value}){
   return()=>{active=false}
  },[number]);
  const lines=reading.verses.length?reading.verses.map(v=>({text:v.text,role:v.role})):reading.text.replace(/\\n/g,'\n').split(/\r?\n/).filter(Boolean).map((text,i)=>({text,role:i%2?'congregation':'leader'}));
- return <div className="responsive-reading-content">{status==='ready'?lines.map((line,i)=><p key={i} className={(line.role==='all'||i%2===1)?'responsive-reading-bold':'responsive-reading-normal'} style={{fontWeight:(line.role==='all'||i%2===1)?800:400}}>{(line.role==='all'||i%2===1)?<strong style={{fontWeight:800}}>{line.text}</strong>:line.text}</p>):<p>{status==='loading'?'교독문을 불러오는 중입니다.':status==='empty'?'교독문 '+number+'번의 본문이 아직 등록되지 않았습니다. 관리자 메뉴에서 등록해 주세요.':status==='invalid'?'교독문 번호를 확인해 주세요.':'교독문을 불러오지 못했습니다. 다시 시도해 주세요.'}</p>}</div>
+ return <div className="responsive-reading-content">{status==='ready'?lines.map((line,i)=><p key={i} className={(line.role==='all'||line.role==='congregation')?'responsive-reading-bold':'responsive-reading-normal'} style={{fontWeight:(line.role==='all'||line.role==='congregation')?800:400}}>{(line.role==='all'||line.role==='congregation')?<strong style={{fontWeight:800}}>{line.text}</strong>:line.text}</p>):<p>{status==='loading'?'교독문을 불러오는 중입니다.':status==='empty'?'교독문 '+number+'번의 본문이 아직 등록되지 않았습니다. 관리자 메뉴에서 등록해 주세요.':status==='invalid'?'교독문 번호를 확인해 주세요.':'교독문을 불러오지 못했습니다. 다시 시도해 주세요.'}</p>}</div>
 }
 function ScriptureReading({reference}){
  const [text,setText]=useState(''),[status,setStatus]=useState('loading');
