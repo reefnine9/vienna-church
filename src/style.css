@@ -81,7 +81,13 @@ main.bulletin-revision1{background:#fffdf9;color:#243044;box-shadow:0 12px 55px 
 .bulletin-revision1 .news .news-bullets li::marker{color:#a58764}
 
 /* Family intercession shares the same .news .news-bullets styles above. */
-/* Keep the family bullet unchanged. Prayer requests sit slightly closer to
+/* Slightly enlarge only the circular family-name bullet; keep its color
+   coordinated with the church-news bullet in every bulletin design. */
+.news .news-bullets.intercession-families > li::marker{
+  font-size:1.35em;
+}
+
+/* Prayer requests sit slightly closer to
    the left and use small square markers; the marker color inherits the exact
    church-news palette (including the selected bulletin design). */
 .news .news-bullets .intercession-prayers{
