@@ -81,6 +81,27 @@ main.bulletin-revision1{background:#fffdf9;color:#243044;box-shadow:0 12px 55px 
 .bulletin-revision1 .news .news-bullets li::marker{color:#a58764}
 
 /* Family intercession shares the same .news .news-bullets styles above. */
+/* Only the prayer-request level is indented; the family name retains the exact
+   church-news bullet, font, color, line-height, and indentation. */
+.news .news-bullets .intercession-prayers{
+  list-style:none;
+  margin:.12em 0 .35em;
+  padding:0 0 0 18px;
+}
+.news .news-bullets .intercession-prayers > li{
+  position:relative;
+  list-style:none;
+  padding-left:16px;
+  margin:0 0 .22em;
+}
+.news .news-bullets .intercession-prayers > li::before{
+  content:"–";
+  position:absolute;
+  left:0;
+  color:currentColor;
+  opacity:.65;
+}
+
 
 /* Revision 2: Vienna skyline editorial cover; existing basic and revision 1 untouched. */
 main.bulletin-revision2{background:#fffefa;color:#1d2f46}
