@@ -1,6 +1,7 @@
 import { editPublishedNews, storedNewsText } from './news-copy-edits.js';
 import { bulletinReadError } from './temporary-bulletin.js';
 import { likeDayRange, likeDayTotal, withLikesSchema } from './likes.js';
+import { INTERCESSION_ID, INTERCESSION_START, INITIAL_INTERCESSION } from './intercession.js';
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
   status,
@@ -34,6 +35,7 @@ function bulletinQuery(db, date) {
         WHERE sunday_date BETWEEN published.sunday_date AND date(published.sunday_date, '+14 days')
       ) AS schedule_json,
       (SELECT body FROM announcements WHERE id = 'church-lunch-schedule-v1') AS lunch_json,
+      (SELECT body FROM announcements WHERE id = '${INTERCESSION_ID}') AS intercession_body,
       (SELECT body FROM announcements WHERE id = 'choir-score-weekly-' || published.sunday_date) AS choir_override
     FROM published
   `);
@@ -51,7 +53,7 @@ function screenQuery(db, { date, start, end }) {
 
 function formatBulletin(row) {
   if (!row) return null;
-  const { items_json, news_json, schedule_json, lunch_json, choir_override, ...bulletin } = row;
+  const { items_json, news_json, schedule_json, lunch_json, choir_override, intercession_body, ...bulletin } = row;
   const items = JSON.parse(items_json || '[]');
   const news = JSON.parse(news_json || '[]').map(announcement => {
     try {
@@ -121,6 +123,9 @@ function formatBulletin(row) {
     ...bulletin,
     items,
     announcements: news,
+    intercession: bulletin.sunday_date >= INTERCESSION_START
+      ? (intercession_body === null || intercession_body === undefined ? INITIAL_INTERCESSION : intercession_body)
+      : (extras.intercession || ''),
     lunch,
     choirPdfUrl: choir_override ?? (today.choir_pdf_url || extras.choirPdfUrl || ''),
   };
