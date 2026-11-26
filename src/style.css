@@ -91,7 +91,7 @@ main.bulletin-revision1{background:#fffdf9;color:#243044;box-shadow:0 12px 55px 
 }
 .news .news-bullets .intercession-prayers > li{
   list-style-type:square;
-  padding-left:.15em;
+  padding-left:12px;
   margin:0 0 .22em;
 }
 .news .news-bullets .intercession-prayers > li::marker{
