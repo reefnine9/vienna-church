@@ -190,7 +190,7 @@ const reset=()=>{if(!confirm('현재 편집 내용을 지우고 예시 주보로
       value={familyIntercession}
       onChange={e=>{setFamilyIntercession(e.target.value);setFamilyIntercessionMessage('');}} />
   </label>
-  <p className="admin-help">각 줄은 교회 소식처럼 글머리표로 표시됩니다. 여기에 저장하면 이번 주와 이후 주보에 함께 반영됩니다.</p>
+  <p className="admin-help">가정 이름을 첫 줄에, 기도 제목을 다음 줄부터 입력하세요. 가정을 추가할 때는 한 줄을 비워 구분합니다. 기도 제목은 작게 들여쓴 줄표(–)로 표시됩니다. 저장하면 이번 주와 이후 주보에 반영됩니다.</p>
   <div className="admin-intercession-actions">
     <button type="button" className="admin-save"
       disabled={familyIntercessionLoading||familyIntercessionSaving||familyIntercession===familyIntercessionSaved}
