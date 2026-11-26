@@ -494,10 +494,3 @@ main[class*="bulletin-"] header .church-like-wrap .bulletin-like.heart-active sv
 .praise-score-overlay .score-pdf-full .score-pdf-drag-track{height:100%;min-height:0;grid-template-rows:minmax(0,1fr);align-items:center}
 .praise-score-overlay .score-pdf-full .score-pdf-drag-slide{height:100%;min-height:0;align-items:center;padding:8px;overflow:hidden}
 .praise-score-overlay .score-pdf-full .score-pdf-drag-slide .score-pdf-page{max-width:100%;max-height:100%;width:auto;height:auto}
-
-/* Keep the intercession .news wrapper layout-neutral while sharing the exact
-   church-news font, bullet style, marker color, indentation and wrapping. */
-main[class*="bulletin-"] .community-section .intercession-news {
-  padding: 0;
-  margin: 0;
-}
