@@ -80,6 +80,17 @@ main.bulletin-revision1{background:#fffdf9;color:#243044;box-shadow:0 12px 55px 
 .bulletin-revision1 .news .news-bullets{padding:14px 6px 14px 1.65em;color:#5a6877;line-height:1.85}
 .bulletin-revision1 .news .news-bullets li::marker{color:#a58764}
 
+/* Family intercession: use the same bullets and wrapping as church news. */
+.community-section .news-bullets { list-style:disc outside; margin:0; padding:11px 1px 11px 1.55em; color:#526273; font-size:.95em; line-height:1.75; }
+.community-section .news-bullets li { padding-left:.15em; margin:0 0 .5em; white-space:pre-wrap; overflow-wrap:anywhere; }
+.community-section .news-bullets li::marker { color:#546a7d; font-size:.9em; }
+.bulletin-revision1 .community-section .news-bullets { padding:14px 6px 14px 1.65em; color:#5a6877; line-height:1.85; }
+.bulletin-revision1 .community-section .news-bullets li::marker { color:#a58764; }
+.bulletin-revision2 .community-section .news-bullets { color:#485c70; line-height:1.85; }
+.bulletin-revision2 .community-section .news-bullets li::marker { color:#b39163; }
+main[class*="bulletin-"] .community-section .news-bullets { padding-top:8px; padding-bottom:8px; line-height:1.5; }
+main[class*="bulletin-"] .community-section .news-bullets li { margin-bottom:.3em; }
+
 /* Revision 2: Vienna skyline editorial cover; existing basic and revision 1 untouched. */
 main.bulletin-revision2{background:#fffefa;color:#1d2f46}
 .bulletin-revision2 header{padding:14px 0;border-bottom:0}
