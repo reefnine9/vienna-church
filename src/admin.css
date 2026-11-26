@@ -152,3 +152,97 @@
 .admin-reading-calendar-cell small { color:#5f7185; min-width:85px; line-height:1.4; font-size:11px; }
 .admin-reading-calendar-table a { color:#315e85; text-decoration:underline; }
 .admin-reading-calendar-status { margin:12px 0 0; color:#315477; font-size:13px; min-height:19px; }
+
+
+/* Repeatable family / prayer request editor */
+.admin-intercession-editor .intercession-group {
+  border:1px solid #dfe7ef;
+  background:#fbfcfe;
+  padding:15px;
+  margin:16px 0;
+  border-radius:12px;
+}
+.admin-intercession-editor .intercession-group-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:16px;
+}
+.admin-intercession-editor .intercession-group-header strong {
+  color:#2c4b6a;
+  font-size:15px;
+}
+.admin-intercession-editor .intercession-group-header button {
+  padding:7px 12px;
+}
+.admin-intercession-editor .intercession-family-label > span {
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.admin-intercession-editor .intercession-family-symbol {
+  font-size:16px;
+  color:#9c8060;
+}
+.admin-intercession-editor .intercession-prayer-list {
+  border-left:2px solid #e6ebf0;
+  padding-left:13px;
+  margin:18px 0 0 11px;
+}
+.admin-intercession-editor .intercession-prayer-heading {
+  display:block;
+  color:#4f6277;
+  font-size:13px;
+  margin-bottom:8px;
+}
+.admin-intercession-editor .intercession-prayer-row {
+  display:grid;
+  grid-template-columns:14px minmax(0,1fr) auto;
+  align-items:end;
+  gap:9px;
+  margin:0 0 12px;
+}
+.admin-intercession-editor .intercession-prayer-row textarea {
+  min-height:65px;
+  line-height:1.55;
+}
+.admin-intercession-editor .intercession-child-symbol {
+  align-self:center;
+  color:#9c8060;
+  font-size:13px;
+  line-height:1;
+}
+.admin-intercession-editor .intercession-remove-prayer {
+  padding:9px;
+  align-self:end;
+  min-height:40px;
+}
+.admin-intercession-editor .intercession-add-prayer {
+  margin:0 0 0 23px;
+  padding:8px 11px;
+  font-size:13px;
+}
+.admin-intercession-editor .intercession-add-family {
+  margin-top:14px;
+}
+.admin-intercession-editor .intercession-footer {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin:20px 0 0;
+}
+.admin-intercession-editor button:disabled {
+  opacity:.55;
+  cursor:not-allowed;
+}
+@media (max-width:600px) {
+  .admin-intercession-editor .intercession-group { padding:12px; }
+  .admin-intercession-editor .intercession-prayer-list { padding-left:10px; margin-left:6px; }
+  .admin-intercession-editor .intercession-prayer-row { gap:6px; grid-template-columns:10px minmax(0,1fr) auto; }
+  .admin-intercession-editor .intercession-remove-prayer { padding:9px 7px; }
+  .admin-intercession-editor .intercession-footer { flex-direction:column; align-items:stretch; }
+  .admin-intercession-editor .intercession-footer .admin-save { width:100%; }
+}
