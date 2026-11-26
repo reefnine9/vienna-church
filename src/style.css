@@ -81,25 +81,21 @@ main.bulletin-revision1{background:#fffdf9;color:#243044;box-shadow:0 12px 55px 
 .bulletin-revision1 .news .news-bullets li::marker{color:#a58764}
 
 /* Family intercession shares the same .news .news-bullets styles above. */
-/* Only the prayer-request level is indented; the family name retains the exact
-   church-news bullet, font, color, line-height, and indentation. */
+/* Keep the family bullet unchanged. Prayer requests sit slightly closer to
+   the left and use small square markers; the marker color inherits the exact
+   church-news palette (including the selected bulletin design). */
 .news .news-bullets .intercession-prayers{
-  list-style:none;
+  list-style-type:square;
   margin:.12em 0 .35em;
-  padding:0 0 0 18px;
+  padding:0 0 0 12px;
 }
 .news .news-bullets .intercession-prayers > li{
-  position:relative;
-  list-style:none;
-  padding-left:16px;
+  list-style-type:square;
+  padding-left:.15em;
   margin:0 0 .22em;
 }
-.news .news-bullets .intercession-prayers > li::before{
-  content:"–";
-  position:absolute;
-  left:0;
-  color:currentColor;
-  opacity:.65;
+.news .news-bullets .intercession-prayers > li::marker{
+  font-size:.8em;
 }
 
 
